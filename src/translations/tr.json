@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "products": "Ürünler",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "blog": "Blog",
+    "cart": "Sepet",
+    "wishlist": "Favoriler",
+    "compare": "Karşılaştır"
+  },
+  "hero": {
+    "title": "El Yapımı",
+    "subtitle": "Boncuklu Çantalar",
+    "description": "Her biri özenle işlenmiş, benzersiz tasarımlar",
+    "cta": "Koleksiyonu Keşfet"
+  },
+  "products": {
+    "all": "Tüm Ürünler",
+    "newArrivals": "Yeni Gelenler",
+    "featured": "Öne Çıkanlar",
+    "sale": "İndirimde",
+    "addToCart": "Sepete Ekle",
+    "quickView": "Hızlı Bakış",
+    "addToWishlist": "Favorilere Ekle",
+    "compare": "Karşılaştır",
+    "inStock": "Stokta",
+    "outOfStock": "Tükendi",
+    "price": "Fiyat"
+  },
+  "categories": {
+    "all": "Tümü",
+    "clutch": "Clutch Çanta",
+    "shoulder": "Omuz Çantası",
+    "tote": "Kol Çantası",
+    "crossbody": "Postacı Çanta"
+  },
+  "filters": {
+    "sortBy": "Sırala",
+    "priceRange": "Fiyat Aralığı",
+    "color": "Renk",
+    "category": "Kategori",
+    "clearFilters": "Filtreleri Temizle",
+    "default": "Varsayılan",
+    "priceLowHigh": "Fiyat: Düşükten Yükseğe",
+    "priceHighLow": "Fiyat: Yüksekten Düşüğe",
+    "nameAZ": "İsim: A-Z",
+    "nameZA": "İsim: Z-A"
+  },
+  "cart": {
+    "myCart": "Sepetim",
+    "empty": "Sepetiniz boş",
+    "continueShopping": "Alışverişe Devam Et",
+    "total": "Toplam",
+    "subtotal": "Ara Toplam",
+    "shipping": "Kargo",
+    "freeShipping": "Ücretsiz Kargo",
+    "checkout": "Sipariş Ver",
+    "remove": "Kaldır",
+    "quantity": "Adet"
+  },
+  "footer": {
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "faq": "SSS",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Koşulları",
+    "followUs": "Bizi Takip Edin",
+    "newsletter": "Bültene Abone Ol",
+    "enterEmail": "E-posta adresinizi girin",
+    "subscribe": "Abone Ol",
+    "copyright": "© 2024 Viona. Tüm hakları saklıdır."
+  },
+  "contact": {
+    "getInTouch": "İletişime Geçin",
+    "name": "Adınız",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "message": "Mesajınız",
+    "send": "Gönder",
+    "address": "Adres",
+    "workHours": "Çalışma Saatleri"
+  },
+  "admin": {
+    "dashboard": "Panel",
+    "products": "Ürünler",
+    "orders": "Siparişler",
+    "inventory": "Envanter",
+    "users": "Kullanıcılar",
+    "reports": "Raporlar",
+    "coupons": "Kuponlar",
+    "flashSale": "Flash Sale",
+    "blog": "Blog",
+    "contact": "Mesajlar",
+    "faq": "SSS",
+    "seo": "SEO",
+    "settings": "Ayarlar",
+    "logout": "Çıkış Yap"
+  },
+  "common": {
+    "search": "Ara...",
+    "loading": "Yükleniyor...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "close": "Kapat",
+    "view": "Görüntüle",
+    "details": "Detaylar",
+    "yes": "Evet",
+    "no": "Hayır",
+    "confirm": "Onayla"
+  }
+}

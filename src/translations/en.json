@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "compare": "Compare"
+  },
+  "hero": {
+    "title": "Handmade",
+    "subtitle": "Beaded Bags",
+    "description": "Unique designs, each carefully crafted",
+    "cta": "Explore Collection"
+  },
+  "products": {
+    "all": "All Products",
+    "newArrivals": "New Arrivals",
+    "featured": "Featured",
+    "sale": "On Sale",
+    "addToCart": "Add to Cart",
+    "quickView": "Quick View",
+    "addToWishlist": "Add to Wishlist",
+    "compare": "Compare",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "price": "Price"
+  },
+  "categories": {
+    "all": "All",
+    "clutch": "Clutch Bag",
+    "shoulder": "Shoulder Bag",
+    "tote": "Tote Bag",
+    "crossbody": "Crossbody Bag"
+  },
+  "filters": {
+    "sortBy": "Sort By",
+    "priceRange": "Price Range",
+    "color": "Color",
+    "category": "Category",
+    "clearFilters": "Clear Filters",
+    "default": "Default",
+    "priceLowHigh": "Price: Low to High",
+    "priceHighLow": "Price: High to Low",
+    "nameAZ": "Name: A-Z",
+    "nameZA": "Name: Z-A"
+  },
+  "cart": {
+    "myCart": "My Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "freeShipping": "Free Shipping",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "followUs": "Follow Us",
+    "newsletter": "Subscribe to Newsletter",
+    "enterEmail": "Enter your email",
+    "subscribe": "Subscribe",
+    "copyright": "© 2024 Viona. All rights reserved."
+  },
+  "contact": {
+    "getInTouch": "Get In Touch",
+    "name": "Your Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Your Message",
+    "send": "Send",
+    "address": "Address",
+    "workHours": "Work Hours"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "inventory": "Inventory",
+    "users": "Users",
+    "reports": "Reports",
+    "coupons": "Coupons",
+    "flashSale": "Flash Sale",
+    "blog": "Blog",
+    "contact": "Messages",
+    "faq": "FAQ",
+    "seo": "SEO",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "common": {
+    "search": "Search...",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "view": "View",
+    "details": "Details",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm"
+  }
+}

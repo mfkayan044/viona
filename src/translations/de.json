@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "blog": "Blog",
+    "cart": "Warenkorb",
+    "wishlist": "Wunschliste",
+    "compare": "Vergleichen"
+  },
+  "hero": {
+    "title": "Handgefertigt",
+    "subtitle": "Perlentaschen",
+    "description": "Einzigartige Designs, jede sorgfältig gefertigt",
+    "cta": "Kollektion Entdecken"
+  },
+  "products": {
+    "all": "Alle Produkte",
+    "newArrivals": "Neuankömmlinge",
+    "featured": "Vorgestellt",
+    "sale": "Im Angebot",
+    "addToCart": "In den Warenkorb",
+    "quickView": "Schnellansicht",
+    "addToWishlist": "Zur Wunschliste",
+    "compare": "Vergleichen",
+    "inStock": "Auf Lager",
+    "outOfStock": "Ausverkauft",
+    "price": "Preis"
+  },
+  "categories": {
+    "all": "Alle",
+    "clutch": "Clutch-Tasche",
+    "shoulder": "Umhängetasche",
+    "tote": "Tragetasche",
+    "crossbody": "Umhängetasche"
+  },
+  "filters": {
+    "sortBy": "Sortieren nach",
+    "priceRange": "Preisspanne",
+    "color": "Farbe",
+    "category": "Kategorie",
+    "clearFilters": "Filter löschen",
+    "default": "Standard",
+    "priceLowHigh": "Preis: Niedrig bis Hoch",
+    "priceHighLow": "Preis: Hoch bis Niedrig",
+    "nameAZ": "Name: A-Z",
+    "nameZA": "Name: Z-A"
+  },
+  "cart": {
+    "myCart": "Mein Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "continueShopping": "Weiter einkaufen",
+    "total": "Gesamt",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "freeShipping": "Kostenloser Versand",
+    "checkout": "Zur Kasse",
+    "remove": "Entfernen",
+    "quantity": "Menge"
+  },
+  "footer": {
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "faq": "FAQ",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "followUs": "Folgen Sie uns",
+    "newsletter": "Newsletter abonnieren",
+    "enterEmail": "Geben Sie Ihre E-Mail ein",
+    "subscribe": "Abonnieren",
+    "copyright": "© 2024 Viona. Alle Rechte vorbehalten."
+  },
+  "contact": {
+    "getInTouch": "Kontaktieren Sie uns",
+    "name": "Ihr Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "message": "Ihre Nachricht",
+    "send": "Senden",
+    "address": "Adresse",
+    "workHours": "Arbeitszeiten"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "products": "Produkte",
+    "orders": "Bestellungen",
+    "inventory": "Inventar",
+    "users": "Benutzer",
+    "reports": "Berichte",
+    "coupons": "Gutscheine",
+    "flashSale": "Flash Sale",
+    "blog": "Blog",
+    "contact": "Nachrichten",
+    "faq": "FAQ",
+    "seo": "SEO",
+    "settings": "Einstellungen",
+    "logout": "Ausloggen"
+  },
+  "common": {
+    "search": "Suchen...",
+    "loading": "Laden...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "close": "Schließen",
+    "view": "Ansehen",
+    "details": "Details",
+    "yes": "Ja",
+    "no": "Nein",
+    "confirm": "Bestätigen"
+  }
+}
