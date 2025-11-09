@@ -126,39 +126,45 @@ export const DashboardProvider = ({ children }) => {
 
   const calculateRecentOrders = async () => {
     try {
-      // Supabase'den son 5 siparişi çek (user bilgisiyle birlikte)
+      // Supabase'den son 5 siparişi çek
       const { data, error } = await supabase
         .from('orders')
-        .select(`
-          id,
-          order_number,
-          customer_name,
-          customer_email,
-          total,
-          status,
-          created_at,
-          user_id,
-          users:user_id (
-            name,
-            email
-          )
-        `)
+        .select('id, order_number, customer_name, customer_email, user_id, total, status, created_at')
         .order('created_at', { ascending: false })
         .limit(5);
 
       if (error) throw error;
 
-      // Verileri formatla
-      const formattedOrders = data.map(order => ({
-        id: order.id,
-        orderNumber: order.order_number || `VN${String(order.id).slice(0, 8).toUpperCase()}`,
-        customerName: order.customer_name || order.users?.name || order.customer_email || 'Misafir',
-        total: order.total,
-        status: order.status,
-        createdAt: order.created_at
-      }));
+      // Her sipariş için user bilgisini ayrı çek
+      const ordersWithUsers = await Promise.all(
+        data.map(async (order) => {
+          let userName = order.customer_name || 'Misafir';
+          
+          // Eğer user_id varsa, user bilgisini çek
+          if (order.user_id) {
+            const { data: userData } = await supabase
+              .from('users')
+              .select('name, email')
+              .eq('id', order.user_id)
+              .single();
+            
+            if (userData) {
+              userName = userData.name || userData.email || order.customer_name;
+            }
+          }
 
-      setRecentOrders(formattedOrders);
+          return {
+            id: order.id,
+            orderNumber: order.order_number || `VN${String(order.id).slice(0, 8).toUpperCase()}`,
+            customerName: userName || order.customer_email || 'Misafir',
+            total: order.total,
+            status: order.status,
+            createdAt: order.created_at
+          };
+        })
+      );
+
+      setRecentOrders(ordersWithUsers);
     } catch (error) {
       console.error('Recent orders load error:', error);
       // Fallback: localStorage'dan

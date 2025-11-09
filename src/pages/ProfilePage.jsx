@@ -470,8 +470,8 @@ const ProfilePage = () => {
                     Yorumlarım
                   </h2>
                   <div className="space-y-4">
-                    {getUserReviews(user.email).length > 0 ? (
-                      getUserReviews(user.email).map(review => (
+                    {getUserReviews(user.id).length > 0 ? (
+                      getUserReviews(user.id).map(review => (
                         <div key={review.id} className="border border-neutral-200 p-6">
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
