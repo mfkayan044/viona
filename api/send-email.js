@@ -41,10 +41,11 @@ export default async function handler(req, res) {
 
     // Mail gönder
     const info = await transporter.sendMail({
-      from: `"Viona Shop" <${process.env.BREVO_SMTP_LOGIN}>`,
+      from: `"Viona Shop" <thevionaofficial@gmail.com>`,
       to: Array.isArray(to) ? to.join(', ') : to,
       subject: subject,
       html: html,
+      replyTo: 'thevionaofficial@gmail.com',
     });
 
     console.log('Email sent:', info.messageId);
