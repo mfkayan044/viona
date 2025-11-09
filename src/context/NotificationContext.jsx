@@ -207,16 +207,4 @@ export const NotificationProvider = ({ children }) => {
     </NotificationContext.Provider>
   );
 };
-  };
-    deleteNotification,
-    clearAll,
-    getNotificationsByCategory,
-    getUnreadByCategory
-  };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
-};
