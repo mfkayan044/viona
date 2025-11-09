@@ -1,10 +1,16 @@
--- Notifications (Bildirimler) Tablosu
+-- Notifications (Bildirimler) Tablosu - Mevcut tabloyu güncelle veya yeniden oluştur
+
+-- Önce mevcut tabloyu sil (sadece ilk kurulumda)
+-- DROP TABLE IF EXISTS notifications CASCADE;
+
+-- Tabloyu oluştur
 CREATE TABLE IF NOT EXISTS notifications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   type TEXT NOT NULL, -- order, review, contact, low_stock
   title TEXT NOT NULL,
   message TEXT NOT NULL,
-  link TEXT, -- Tıklandığında gidilecek sayfa
+  data JSONB, -- Ek bilgiler (link, order_id, vb.)
+  priority TEXT DEFAULT 'normal', -- urgent, high, normal, low
   is_read BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -17,27 +23,31 @@ CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type);
 -- RLS (Row Level Security)
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
--- Admin'ler tüm bildirimleri görebilir
-CREATE POLICY "Admins can view all notifications" ON notifications
-  FOR SELECT
-  USING (true); -- Basitlik için - gerçekte admin kontrolü yapılabilir
+-- Eski policy'leri temizle
+DROP POLICY IF EXISTS "Admins can view all notifications" ON notifications;
+DROP POLICY IF EXISTS "Admins can insert notifications" ON notifications;
+DROP POLICY IF EXISTS "Admins can update notifications" ON notifications;
+DROP POLICY IF EXISTS "Admins can delete notifications" ON notifications;
 
--- Admin'ler bildirim ekleyebilir
-CREATE POLICY "Admins can insert notifications" ON notifications
+-- Yeni policy'ler
+CREATE POLICY "Anyone can view notifications" ON notifications
+  FOR SELECT
+  USING (true);
+
+CREATE POLICY "Anyone can insert notifications" ON notifications
   FOR INSERT
   WITH CHECK (true);
 
--- Admin'ler bildirimleri güncelleyebilir (okundu işareti)
-CREATE POLICY "Admins can update notifications" ON notifications
+CREATE POLICY "Anyone can update notifications" ON notifications
   FOR UPDATE
   USING (true);
 
--- Admin'ler bildirimleri silebilir
-CREATE POLICY "Admins can delete notifications" ON notifications
+CREATE POLICY "Anyone can delete notifications" ON notifications
   FOR DELETE
   USING (true);
 
 -- Örnek bildirimler ekle
-INSERT INTO notifications (type, title, message, link) VALUES
-  ('order', 'Yeni Sipariş', 'VN12345678 numaralı sipariş alındı', '/admin/orders'),
-  ('review', 'Yeni Yorum', 'Bir ürüne yeni yorum yapıldı', '/admin/reviews');
+INSERT INTO notifications (type, title, message, data, priority) VALUES
+  ('order', 'Yeni Sipariş', 'VN12345678 numaralı sipariş alındı', '{"link": "/admin/orders"}'::jsonb, 'high'),
+  ('review', 'Yeni Yorum', 'Bir ürüne yeni yorum yapıldı', '{"link": "/admin/reviews"}'::jsonb, 'normal')
+ON CONFLICT DO NOTHING;

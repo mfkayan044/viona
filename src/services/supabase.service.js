@@ -1094,13 +1094,17 @@ export const notificationService = {
         type: notification.type,
         title: notification.title,
         message: notification.message,
-        link: notification.link || null,
+        data: notification.link ? { link: notification.link } : (notification.data || null),
+        priority: notification.priority || 'normal',
         is_read: false
       }])
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Notification create error:', error);
+      throw error;
+    }
     return data;
   },
 
