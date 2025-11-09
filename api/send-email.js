@@ -41,11 +41,11 @@ export default async function handler(req, res) {
 
     // Mail gönder
     const info = await transporter.sendMail({
-      from: `"Viona Shop" <thevionaofficial@gmail.com>`,
+      from: `"Viona Shop" <info@viona.com.tr>`,
       to: Array.isArray(to) ? to.join(', ') : to,
       subject: subject,
       html: html,
-      replyTo: 'thevionaofficial@gmail.com',
+      replyTo: 'info@viona.com.tr',
     });
 
     console.log('Email sent:', info.messageId);
