@@ -4,19 +4,105 @@
 
 ### 1. Zoho Mail Hesabı Hazırlığı
 
-**A. Zoho Mail App Password Oluştur:**
+**ÖNEMLİ**: Zoho Mail'de 2 yöntem var:
+
+#### Yöntem A: App-Specific Password (Bazı hesaplarda yok)
 1. Zoho Mail'e giriş yap: https://mail.zoho.com
 2. **Settings** → **Security** → **App Passwords**
-3. **Generate New Password** tıkla
-4. App Name: "VIONA E-commerce"
-5. Oluşturulan şifreyi kopyala (tek kullanımlık gösterilir!)
+3. Eğer bu seçenek yoksa **Yöntem B**'yi kullan
+
+#### Yöntem B: Normal Hesap Şifresi (DAHA KOLAY) ⭐ ÖNERİLEN
+1. Zoho Mail'e giriş yap: https://mail.zoho.com
+2. **Settings** → **Mail Accounts** → **IMAP/POP Settings**
+3. **"Enable IMAP Access"** seçeneğini AKTİF yap
+4. **"Allow access to less secure apps"** seçeneğini AKTİF yap (varsa)
+5. Normal Zoho şifrenizi kullanın (App Password gerekmez!)
+
+**Not**: Zoho, domain-based email kullanıyorsanız (örn: noreply@yourdomain.com), ek ayar gerekmeyebilir.
+
+#### Yöntem C: OAuth 2.0 (Gelişmiş)
+1. Zoho Developer Console: https://api-console.zoho.com
+2. **Add Client** → **Server-based Applications**
+3. Client ID ve Secret al
+4. OAuth flow ile token al
+
+**ÖNERİ**: Önce **Yöntem B** ile test edin!
 
 **B. SMTP Ayarları:**
 - **Host**: smtp.zoho.com
 - **Port**: 587 (TLS) veya 465 (SSL)
 - **Security**: TLS/STARTTLS
 - **Username**: Zoho email adresiniz (örn: noreply@yourdomain.com)
-- **Password**: App Password (yukarıda oluşturduğunuz)
+- **Password**: 
+  - Yöntem A: App-specific password
+  - **Yöntem B: Normal Zoho şifreniz** ⭐
+  - Yöntem C: OAuth token
+
+---
+
+## 🚀 HIZLI TEST - Nodemailer ile (Yerel Test)
+
+Önce yerel olarak test edelim:
+
+### 1. Test Script Oluştur
+
+`test-zoho-smtp.js` oluştur:
+
+```javascript
+const nodemailer = require('nodemailer');
+
+// Zoho SMTP ayarları
+const transporter = nodemailer.createTransport({
+  host: 'smtp.zoho.com',
+  port: 587,
+  secure: false, // TLS
+  auth: {
+    user: 'ZOHO_EMAIL_ADRESINIZ', // Örn: noreply@yourdomain.com
+    pass: 'ZOHO_SIFRENIZ'         // Normal şifreniz
+  },
+  tls: {
+    rejectUnauthorized: false // Test için
+  }
+});
+
+// Test mail gönder
+async function testEmail() {
+  try {
+    const info = await transporter.sendMail({
+      from: 'ZOHO_EMAIL_ADRESINIZ',
+      to: 'test@example.com', // Kendi mailinizi yazın
+      subject: 'Test - Zoho Mail SMTP',
+      text: 'Merhaba! Bu bir test mailidir.',
+      html: '<b>Merhaba!</b><br>Bu bir test mailidir.'
+    });
+
+    console.log('✅ Mail başarıyla gönderildi!');
+    console.log('Message ID:', info.messageId);
+  } catch (error) {
+    console.error('❌ Hata:', error.message);
+    console.error('Detay:', error);
+  }
+}
+
+testEmail();
+```
+
+### 2. Test Çalıştır
+
+```bash
+# Nodemailer kur
+npm install nodemailer
+
+# Test et
+node test-zoho-smtp.js
+```
+
+**Başarılı olursa** → Ayarlarınız doğru, Edge Function'a geçebilirsiniz!
+
+**Hata alırsanız**:
+- Username/password kontrol edin
+- IMAP/POP Access aktif mi?
+- Zoho hesabınız aktif mi?
 
 ---
 

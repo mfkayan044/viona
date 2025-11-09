@@ -1,19 +1,27 @@
 import { supabase } from '../lib/supabase';
 
 export const emailService = {
-  // Zoho Mail ile mail gönder (Supabase Edge Function kullanarak)
+  // Zoho Mail ile mail gönder (Vercel Serverless Function kullanarak)
   async sendEmail(emailData) {
     try {
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           to: emailData.recipients, // Array veya string
           subject: emailData.subject,
-          message: emailData.message,
-          from: emailData.from || 'noreply@yourdomain.com'
-        }
+          html: emailData.message,
+        })
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Email sending failed');
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Email send error:', error);
