@@ -1094,8 +1094,8 @@ export const notificationService = {
         type: notification.type,
         title: notification.title,
         message: notification.message,
-        data: notification.data || null,
-        priority: notification.priority || 'normal'
+        link: notification.link || null,
+        is_read: false
       }])
       .select()
       .single();

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useOrders } from '../contexts/OrderContext';
-import { useInventory } from '../context/InventoryContext';
-import { useContact } from '../contexts/ContactContext';
+import { notificationService } from '../services/supabase.service';
+import { supabase } from '../lib/supabase';
 
 const NotificationContext = createContext();
 
@@ -14,34 +13,48 @@ export const useNotifications = () => {
 };
 
 export const NotificationProvider = ({ children }) => {
-  const { orders } = useOrders();
-  const { stockAlerts } = useInventory();
-  const { messages } = useContact();
-
-  const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('adminNotifications');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Supabase'den bildirimleri yükle
   useEffect(() => {
-    localStorage.setItem('adminNotifications', JSON.stringify(notifications));
-    setUnreadCount(notifications.filter(n => !n.read).length);
+    loadNotifications();
+
+    // ✅ Realtime bildirim güncellemeleri
+    const notificationsSubscription = supabase
+      .channel('public:notifications')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notifications' },
+        (payload) => {
+          console.log('🔔 Yeni bildirim:', payload);
+          loadNotifications(); // Bildirimleri yeniden yükle
+        }
+      )
+      .subscribe();
+
+    return () => {
+      notificationsSubscription.unsubscribe();
+    };
+  }, []);
+
+  // Okunmamış sayısını güncelle
+  useEffect(() => {
+    setUnreadCount(notifications.filter(n => !n.is_read).length);
   }, [notifications]);
 
-  useEffect(() => {
-    checkForNewOrders();
-  }, [orders]);
-
-  useEffect(() => {
-    checkForNewMessages();
-  }, [messages]);
-
-  useEffect(() => {
-    checkStockAlerts();
-  }, [stockAlerts]);
+  const loadNotifications = async () => {
+    try {
+      setLoading(true);
+      const data = await notificationService.getAll();
+      setNotifications(data || []);
+    } catch (error) {
+      console.error('Notifications load error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const checkForNewOrders = () => {
     const pendingOrders = orders.filter(o => o.status === 'pending');
@@ -139,40 +152,62 @@ export const NotificationProvider = ({ children }) => {
     setNotifications(prev => [newNotif, ...prev].slice(0, 50)); // Max 50 bildirim
   };
 
-  const markAsRead = (notificationId) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-    );
+  const markAsRead = async (notificationId) => {
+    try {
+      await notificationService.markAsRead(notificationId);
+      setNotifications(prev =>
+        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+      );
+    } catch (error) {
+      console.error('Mark as read error:', error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  const markAllAsRead = async () => {
+    try {
+      await notificationService.markAllAsRead();
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    } catch (error) {
+      console.error('Mark all as read error:', error);
+    }
   };
 
-  const deleteNotification = (notificationId) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+  const deleteNotification = async (notificationId) => {
+    try {
+      await notificationService.delete(notificationId);
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    } catch (error) {
+      console.error('Delete notification error:', error);
+    }
   };
 
-  const clearAll = () => {
-    setNotifications([]);
-  };
-
-  const getNotificationsByCategory = (category) => {
-    return notifications.filter(n => n.category === category);
-  };
-
-  const getUnreadByCategory = (category) => {
-    return notifications.filter(n => n.category === category && !n.read).length;
+  const clearAllRead = async () => {
+    try {
+      await notificationService.deleteRead();
+      setNotifications(prev => prev.filter(n => !n.is_read));
+    } catch (error) {
+      console.error('Clear read error:', error);
+    }
   };
 
   const value = {
     notifications,
     unreadCount,
-    showNotifications,
-    setShowNotifications,
-    addNotification,
+    loading,
     markAsRead,
     markAllAsRead,
+    deleteNotification,
+    clearAllRead,
+    loadNotifications
+  };
+
+  return (
+    <NotificationContext.Provider value={value}>
+      {children}
+    </NotificationContext.Provider>
+  );
+};
+  };
     deleteNotification,
     clearAll,
     getNotificationsByCategory,

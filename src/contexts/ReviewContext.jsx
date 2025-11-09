@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { reviewService } from '../services/supabase.service';
+import { reviewService, notificationService } from '../services/supabase.service';
+import { supabase } from '../lib/supabase';
 
 const ReviewContext = createContext();
 
@@ -18,6 +19,23 @@ export const ReviewProvider = ({ children }) => {
   // Supabase'den yükle
   useEffect(() => {
     loadReviews();
+
+    // ✅ Realtime yorum güncellemeleri
+    const reviewsSubscription = supabase
+      .channel('public:reviews')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'reviews' },
+        (payload) => {
+          console.log('🔔 Yorum güncellendi:', payload);
+          loadReviews(); // Yorumları yeniden yükle
+        }
+      )
+      .subscribe();
+
+    return () => {
+      reviewsSubscription.unsubscribe();
+    };
   }, []);
 
   const loadReviews = async () => {
@@ -46,6 +64,19 @@ export const ReviewProvider = ({ children }) => {
 
       // State'i güncelle
       setReviews(prev => [newReview, ...prev]);
+      
+      // ✅ Admin'e bildirim gönder
+      try {
+        await notificationService.create({
+          type: 'review',
+          title: '⭐ Yeni Yorum',
+          message: `${reviewData.userName} bir ürüne ${reviewData.rating} yıldız verdi`,
+          link: '/admin/reviews'
+        });
+      } catch (notifError) {
+        console.error('Notification error:', notifError);
+        // Bildirim hatası review'i engellemez
+      }
       
       // Başarıyla eklendi, yeniden yükle
       await loadReviews();
