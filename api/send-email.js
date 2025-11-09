@@ -28,30 +28,20 @@ export default async function handler(req, res) {
       });
     }
 
-    // Debug: Environment variables kontrol
-    console.log('DEBUG - ZOHO_EMAIL:', process.env.ZOHO_EMAIL);
-    console.log('DEBUG - ZOHO_PASSWORD:', process.env.ZOHO_PASSWORD ? '***' + process.env.ZOHO_PASSWORD.slice(-4) : 'MISSING');
-    console.log('DEBUG - ZOHO_SMTP_HOST:', process.env.ZOHO_SMTP_HOST);
-    console.log('DEBUG - ZOHO_SMTP_PORT:', process.env.ZOHO_SMTP_PORT);
-
-    // Zoho Mail SMTP yapılandırması
+    // Brevo (Sendinblue) SMTP yapılandırması
     const transporter = nodemailer.createTransport({
-      host: process.env.ZOHO_SMTP_HOST || 'smtp.zoho.com',
-      port: parseInt(process.env.ZOHO_SMTP_PORT || '587'),
+      host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
+      port: parseInt(process.env.BREVO_SMTP_PORT || '587'),
       secure: false, // TLS kullanıyoruz (587 portu için false)
       auth: {
-        user: process.env.ZOHO_EMAIL,
-        pass: process.env.ZOHO_PASSWORD,
+        user: process.env.BREVO_SMTP_LOGIN,
+        pass: process.env.BREVO_SMTP_PASSWORD,
       },
-      tls: {
-        rejectUnauthorized: true,
-        minVersion: 'TLSv1.2'
-      }
     });
 
     // Mail gönder
     const info = await transporter.sendMail({
-      from: `"Viona Shop" <${process.env.ZOHO_EMAIL}>`,
+      from: `"Viona Shop" <${process.env.BREVO_SMTP_LOGIN}>`,
       to: Array.isArray(to) ? to.join(', ') : to,
       subject: subject,
       html: html,
