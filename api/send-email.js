@@ -28,6 +28,12 @@ export default async function handler(req, res) {
       });
     }
 
+    // Debug: Environment variables kontrol
+    console.log('DEBUG - ZOHO_EMAIL:', process.env.ZOHO_EMAIL);
+    console.log('DEBUG - ZOHO_PASSWORD:', process.env.ZOHO_PASSWORD ? '***' + process.env.ZOHO_PASSWORD.slice(-4) : 'MISSING');
+    console.log('DEBUG - ZOHO_SMTP_HOST:', process.env.ZOHO_SMTP_HOST);
+    console.log('DEBUG - ZOHO_SMTP_PORT:', process.env.ZOHO_SMTP_PORT);
+
     // Zoho Mail SMTP yapılandırması
     const transporter = nodemailer.createTransport({
       host: process.env.ZOHO_SMTP_HOST || 'smtp.zoho.com',
