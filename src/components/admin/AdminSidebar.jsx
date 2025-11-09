@@ -1,5 +1,5 @@
 import React from 'react';
-import { Package, Settings, Eye, LogOut, ShoppingBag, Tag, FileText, MessageSquare, HelpCircle, Zap, BarChart2, Archive, Users, PieChart, Search, CreditCard, Star } from 'lucide-react';
+import { Package, Settings, Eye, LogOut, ShoppingBag, Tag, FileText, MessageSquare, HelpCircle, Zap, BarChart2, Archive, Users, PieChart, Search, CreditCard, Star, Mail } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../contexts/AppContext';
 import NotificationBell from './NotificationBell';
@@ -185,6 +185,18 @@ const AdminSidebar = () => {
         >
           <Search size={18} />
           <span>SEO</span>
+        </button>
+        
+        <button
+          onClick={() => navigate('/admin/email')}
+          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
+            isActive('/admin/email') 
+              ? 'bg-white text-black translate-x-2' 
+              : 'hover:bg-gray-900 hover:translate-x-1'
+          }`}
+        >
+          <Mail size={18} />
+          <span>Mail Gönder</span>
         </button>
         
         <button

@@ -17,6 +17,7 @@ import AdminReports from '../components/admin/AdminReports';
 import AdminSEO from '../components/admin/AdminSEO';
 import AdminPaymentSettings from '../components/admin/AdminPaymentSettings';
 import AdminReviews from '../components/admin/AdminReviews';
+import AdminEmail from '../components/admin/AdminEmail';
 
 const AdminDashboard = () => {
   const { user, loading } = useAuth();
@@ -56,6 +57,7 @@ const AdminDashboard = () => {
           <Route path="/contact" element={<AdminContact />} />
           <Route path="/faq" element={<AdminFaq />} />
           <Route path="/seo" element={<AdminSEO />} />
+          <Route path="/email" element={<AdminEmail />} />
           <Route path="/settings" element={<AdminSettings />} />
           <Route path="/payment-settings" element={<AdminPaymentSettings />} />
         </Routes>
