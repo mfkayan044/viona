@@ -193,7 +193,9 @@ export default function AdminDashboardHome() {
             <tbody className="divide-y divide-neutral-200">
               {recentOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-neutral-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">#{order.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    #{order.id ? String(order.id).slice(0, 8).toUpperCase() : 'N/A'}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{order.customerName || 'Misafir'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     {(order.total || 0).toLocaleString('tr-TR')} ₺

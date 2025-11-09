@@ -26,6 +26,16 @@ const Header = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  const handleHashNavigation = (hash) => {
+    navigate('/');
+    setTimeout(() => {
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
     <header className="bg-white border-b border-neutral-200 sticky top-0 z-50">
       {/* Scroll Progress Bar */}
@@ -62,13 +72,13 @@ const Header = () => {
             {t('nav.home')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link
-            to="/#products"
+          <button
+            onClick={() => handleHashNavigation('products')}
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.products')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </Link>
+          </button>
           <Link
             to="/blog"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
@@ -76,13 +86,13 @@ const Header = () => {
             {t('nav.blog')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link
-            to="/#about"
+          <button
+            onClick={() => handleHashNavigation('about')}
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.about')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </Link>
+          </button>
           <Link
             to="/contact"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"

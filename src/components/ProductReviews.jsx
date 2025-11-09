@@ -68,7 +68,7 @@ const ProductReviews = ({ productId }) => {
     addReview({
       productId,
       userEmail: user.email,
-      userName: `${user.firstName} ${user.lastName}`,
+      userName: user.name || user.email.split('@')[0],
       userAvatar: user.avatar,
       rating,
       comment: comment.trim()

@@ -35,8 +35,8 @@ const HeroBackground = ({ images = [] }) => {
             alt={`Hero background ${index + 1}`}
             className="w-full h-full object-cover"
           />
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/70 to-white/80" />
+          {/* Overlay for better text readability - Reduced opacity for more vibrant images */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/50 to-white/60" />
         </div>
       ))}
       

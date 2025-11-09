@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-const ImageMagnifier = ({ src, alt, magnifierSize = 150, zoomLevel = 2 }) => {
+const ImageMagnifier = ({ src, alt, magnifierSize = 150, zoomLevel = 1.5 }) => {
   const [showMagnifier, setShowMagnifier] = useState(false);
   const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
