@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Users, Mail, FileText, Check, X, Loader } from 'lucide-react';
+import { Send, Users, Mail, FileText, Check, X, Loader, Search } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useOrders } from '../../contexts/OrderContext';
 import { useToast } from '../../contexts/ToastContext';
+import { supabase } from '../../lib/supabase';
+import emailService from '../../services/email.service';
 
 const AdminEmail = () => {
   const { user } = useAuth();
@@ -12,9 +14,13 @@ const AdminEmail = () => {
   const [emailData, setEmailData] = useState({
     subject: '',
     message: '',
-    recipientType: 'all', // all, customers, subscribers
+    recipientType: 'all', // all, customers, subscribers, selected
     recipients: []
   });
+
+  const [allUsers, setAllUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -26,9 +32,43 @@ const AdminEmail = () => {
   const [sentHistory, setSentHistory] = useState([]);
 
   useEffect(() => {
+    loadUsers();
     loadStats();
     loadHistory();
   }, [orders]);
+
+  const loadUsers = async () => {
+    try {
+      // Supabase'den tüm kullanıcıları çek
+      const { data: usersData, error } = await supabase
+        .from('users')
+        .select('id, name, email')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Sipariş vermiş müşterileri ekle
+      const orderEmails = orders.map(o => ({
+        id: o.id,
+        name: o.customer_name || 'Misafir',
+        email: o.customer_email
+      }));
+
+      // Newsletter aboneleri
+      const subscribers = JSON.parse(localStorage.getItem('newsletterSubscribers') || '[]')
+        .map(email => ({ id: email, name: email, email }));
+
+      // Tümünü birleştir ve unique yap
+      const allEmails = [...usersData, ...orderEmails, ...subscribers];
+      const uniqueUsers = Array.from(
+        new Map(allEmails.filter(u => u.email).map(u => [u.email, u])).values()
+      );
+
+      setAllUsers(uniqueUsers);
+    } catch (error) {
+      console.error('Users load error:', error);
+    }
+  };
 
   const loadStats = () => {
     // Müşteri listesi (siparişlerden)
@@ -52,22 +92,50 @@ const AdminEmail = () => {
   const getRecipients = () => {
     switch (emailData.recipientType) {
       case 'all':
-        // Tüm müşteriler + aboneler
-        const customers = orders.map(o => o.customer_email).filter(Boolean);
-        const subscribers = JSON.parse(localStorage.getItem('newsletterSubscribers') || '[]');
-        return [...new Set([...customers, ...subscribers])];
+        return allUsers.map(u => u.email);
       
       case 'customers':
         // Sadece sipariş vermiş müşteriler
-        return [...new Set(orders.map(o => o.customer_email).filter(Boolean))];
+        const customerEmails = [...new Set(orders.map(o => o.customer_email).filter(Boolean))];
+        return customerEmails;
       
       case 'subscribers':
         // Sadece newsletter aboneleri
         return JSON.parse(localStorage.getItem('newsletterSubscribers') || '[]');
       
+      case 'selected':
+        // Seçili kullanıcılar
+        return selectedUsers;
+      
       default:
         return [];
     }
+  };
+
+  const toggleUserSelection = (email) => {
+    setSelectedUsers(prev => {
+      if (prev.includes(email)) {
+        return prev.filter(e => e !== email);
+      } else {
+        return [...prev, email];
+      }
+    });
+  };
+
+  const toggleSelectAll = () => {
+    const filtered = getFilteredUsers();
+    if (selectedUsers.length === filtered.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(filtered.map(u => u.email));
+    }
+  };
+
+  const getFilteredUsers = () => {
+    return allUsers.filter(u => 
+      u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   };
 
   const handleSendEmail = async () => {
@@ -90,8 +158,12 @@ const AdminEmail = () => {
     setSending(true);
 
     try {
-      // Simülasyon (Gerçekte email service kullanılacak)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Gerçek mail gönderimi (Zoho Mail + Supabase Edge Function)
+      await emailService.sendBulkEmail({
+        recipients,
+        subject: emailData.subject,
+        message: emailData.message
+      });
 
       // Mail geçmişine kaydet
       const newRecord = {
@@ -108,7 +180,7 @@ const AdminEmail = () => {
       localStorage.setItem('emailHistory', JSON.stringify(history));
       setSentHistory(history);
 
-      toast.success(`${recipients.length} kişiye mail gönderildi!`);
+      toast.success(`✅ ${recipients.length} kişiye mail gönderildi!`);
       
       // Formu temizle
       setEmailData({
@@ -117,9 +189,10 @@ const AdminEmail = () => {
         recipientType: 'all',
         recipients: []
       });
+      setSelectedUsers([]);
     } catch (error) {
       console.error('Email send error:', error);
-      toast.error('Mail gönderilirken hata oluştu!');
+      toast.error('❌ Mail gönderilirken hata oluştu: ' + error.message);
     } finally {
       setSending(false);
     }
@@ -231,14 +304,71 @@ VIONA`
               <label className="block text-sm font-medium mb-2">Alıcılar</label>
               <select
                 value={emailData.recipientType}
-                onChange={(e) => setEmailData({ ...emailData, recipientType: e.target.value })}
+                onChange={(e) => {
+                  setEmailData({ ...emailData, recipientType: e.target.value });
+                  if (e.target.value !== 'selected') {
+                    setSelectedUsers([]);
+                  }
+                }}
                 className="input-field w-full"
               >
-                <option value="all">Tümü ({getRecipients().length} kişi)</option>
+                <option value="all">Tümü ({allUsers.length} kişi)</option>
                 <option value="customers">Sadece Müşteriler ({stats.totalCustomers} kişi)</option>
                 <option value="subscribers">Sadece Aboneler ({stats.totalSubscribers} kişi)</option>
+                <option value="selected">Seçili Kullanıcılar ({selectedUsers.length} kişi)</option>
               </select>
             </div>
+
+            {/* Kullanıcı Seçim Listesi */}
+            {emailData.recipientType === 'selected' && (
+              <div className="mb-4 border border-neutral-200 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-medium">Kullanıcı Seç</label>
+                  <button
+                    onClick={toggleSelectAll}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    {selectedUsers.length === getFilteredUsers().length ? 'Seçimi Kaldır' : 'Tümünü Seç'}
+                  </button>
+                </div>
+                
+                {/* Arama */}
+                <div className="mb-3 relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Kullanıcı ara..."
+                    className="input-field w-full pl-10 text-sm"
+                  />
+                </div>
+
+                {/* Kullanıcı Listesi */}
+                <div className="max-h-64 overflow-y-auto space-y-2">
+                  {getFilteredUsers().map((u) => (
+                    <label
+                      key={u.email}
+                      className="flex items-center gap-2 p-2 hover:bg-neutral-50 cursor-pointer rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.includes(u.email)}
+                        onChange={() => toggleUserSelection(u.email)}
+                        className="w-4 h-4 accent-black"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{u.name}</p>
+                        <p className="text-xs text-neutral-500 truncate">{u.email}</p>
+                      </div>
+                    </label>
+                  ))}
+                  {getFilteredUsers().length === 0 && (
+                    <p className="text-sm text-neutral-500 text-center py-4">Kullanıcı bulunamadı</p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Konu */}
             <div className="mb-4">
