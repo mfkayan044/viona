@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ShoppingBag, Menu, X, Heart, User, LogOut, Package } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { useWishlist } from '../contexts/WishlistContext';
@@ -54,68 +55,47 @@ const Header = () => {
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
-          <button
-            onClick={() => {
-              navigate('/');
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }, 100);
-            }}
+          <Link
+            to="/"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.home')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </button>
-          <button
-            onClick={() => {
-              navigate('/');
-              setTimeout(() => {
-                const element = document.getElementById('products');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                }
-              }, 100);
-            }}
+          </Link>
+          <Link
+            to="/#products"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.products')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </button>
-          <button
-            onClick={() => navigate('/blog')}
+          </Link>
+          <Link
+            to="/blog"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.blog')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </button>
-          <button
-            onClick={() => {
-              navigate('/');
-              setTimeout(() => {
-                const element = document.getElementById('about');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                }
-              }, 100);
-            }}
+          </Link>
+          <Link
+            to="/#about"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.about')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </button>
-          <button
-            onClick={() => navigate('/contact')}
+          </Link>
+          <Link
+            to="/contact"
             className="text-sm text-neutral-700 hover:text-black transition-all duration-300 uppercase tracking-widest relative group"
           >
             {t('nav.contact')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
-          </button>
-          <button
-            onClick={() => navigate('/admin-login')}
+          </Link>
+          <Link
+            to="/admin-login"
             className="text-xs text-neutral-400 hover:text-black transition-all duration-300 uppercase tracking-widest hover:scale-105"
           >
             Admin
-          </button>
+          </Link>
         </nav>
         
         <div className="flex items-center gap-2">

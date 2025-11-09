@@ -1,0 +1,32 @@
+-- ===============================================
+-- ⚠️ BU DOSYA SQL EDİTÖR'DE ÇALIŞTIRILMAMALIDIR!
+-- ===============================================
+--
+-- Bu dosya sadece REFERANS amaçlıdır.
+-- Storage bucket'ları ve policy'leri Dashboard'dan manuel oluşturulmalıdır.
+--
+-- ✅ TAMAMLANDI: Storage bucket'ları Dashboard'dan oluşturuldu
+--
+-- Oluşturulan Bucket'lar:
+-- - product-images (Public: ON)
+-- - hero-images (Public: ON)
+-- - site-assets (Public: ON)
+-- - avatars (Public: ON)
+--
+-- Her bucket için policy eklendi:
+-- - "Allow access to JPG images in a public folder to anonymous users" şablonu kullanıldı
+-- - Policy definition: bucket_id = 'BUCKET-NAME'
+--
+-- ===============================================
+-- SONUÇ: Storage kurulumu tamamlandı ✅
+-- ===============================================
+--
+-- Artık:
+-- ✅ Admin kullanıcılar resim yükleyebilir
+-- ✅ Tüm kullanıcılar resimleri görebilir
+-- ✅ Storage hatası çözüldü
+--
+-- Bu dosyayı silmek isterseniz silebilirsiniz, 
+-- artık ihtiyaç yok çünkü kurulum Dashboard'dan tamamlandı.
+--
+-- ===============================================

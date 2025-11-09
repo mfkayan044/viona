@@ -128,7 +128,7 @@ export default function NotificationBell() {
 
       {/* Bildirim Paneli */}
       {showNotifications && (
-        <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] max-h-[600px] bg-white border border-neutral-300 shadow-2xl z-[9999] flex flex-col rounded-lg overflow-hidden">
+        <div className="fixed right-4 top-16 w-96 max-w-[calc(100vw-2rem)] max-h-[600px] bg-white border border-neutral-300 shadow-2xl z-[9999] flex flex-col rounded-lg overflow-hidden">
           {/* Başlık */}
           <div className="p-4 border-b border-neutral-300 flex items-center justify-between bg-neutral-50">
             <div className="flex items-center gap-2">

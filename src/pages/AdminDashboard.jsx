@@ -40,22 +40,24 @@ const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <Routes>
-        <Route path="/" element={<AdminDashboardHome />} />
-        <Route path="/products" element={<AdminProducts />} />
-        <Route path="/orders" element={<AdminOrders />} />
-        <Route path="/inventory" element={<AdminInventory />} />
-        <Route path="/users" element={<AdminUsers />} />
-        <Route path="/reports" element={<AdminReports />} />
-        <Route path="/coupons" element={<AdminCoupons />} />
-        <Route path="/flash-sale" element={<AdminFlashSale />} />
-        <Route path="/blog" element={<AdminBlog />} />
-        <Route path="/contact" element={<AdminContact />} />
-        <Route path="/faq" element={<AdminFaq />} />
-        <Route path="/seo" element={<AdminSEO />} />
-        <Route path="/settings" element={<AdminSettings />} />
-        <Route path="/payment-settings" element={<AdminPaymentSettings />} />
-      </Routes>
+      <div className="flex-1 ml-64">
+        <Routes>
+          <Route path="/" element={<AdminDashboardHome />} />
+          <Route path="/products" element={<AdminProducts />} />
+          <Route path="/orders" element={<AdminOrders />} />
+          <Route path="/inventory" element={<AdminInventory />} />
+          <Route path="/users" element={<AdminUsers />} />
+          <Route path="/reports" element={<AdminReports />} />
+          <Route path="/coupons" element={<AdminCoupons />} />
+          <Route path="/flash-sale" element={<AdminFlashSale />} />
+          <Route path="/blog" element={<AdminBlog />} />
+          <Route path="/contact" element={<AdminContact />} />
+          <Route path="/faq" element={<AdminFaq />} />
+          <Route path="/seo" element={<AdminSEO />} />
+          <Route path="/settings" element={<AdminSettings />} />
+          <Route path="/payment-settings" element={<AdminPaymentSettings />} />
+        </Routes>
+      </div>
     </div>
   );
 };

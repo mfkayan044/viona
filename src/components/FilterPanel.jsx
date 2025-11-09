@@ -11,8 +11,9 @@ const FilterPanel = ({ filters, onFilterChange, products }) => {
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
+      category: section === 'category' ? !prev.category : prev.category,
+      price: section === 'price' ? !prev.price : prev.price,
+      color: section === 'color' ? !prev.color : prev.color
     }));
   };
 

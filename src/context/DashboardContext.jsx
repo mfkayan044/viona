@@ -74,6 +74,7 @@ export const DashboardProvider = ({ children }) => {
     calculateSalesData();
     calculateTopProducts();
     calculateCategoryStats();
+    calculateRecentOrders();
   }, [orders, products]);
 
   // ✅ Supabase'den dashboard istatistiklerini çek
@@ -121,8 +122,14 @@ export const DashboardProvider = ({ children }) => {
       completedOrders,
       averageOrderValue
     });
+  };
 
-    setRecentOrders(orders.slice(-5).reverse());
+  const calculateRecentOrders = () => {
+    // Son 5 siparişi al ve ters çevir (en yeni başta)
+    const recent = [...orders]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5);
+    setRecentOrders(recent);
   };
 
   const calculateSalesData = () => {

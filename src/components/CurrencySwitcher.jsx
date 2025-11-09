@@ -20,7 +20,11 @@ export default function CurrencySwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-neutral-100 rounded-lg transition"
       >
-        <DollarSign size={18} />
+        {currency === 'TRY' ? (
+          <span className="font-semibold text-base">₺</span>
+        ) : (
+          <DollarSign size={18} />
+        )}
         <span className="hidden md:inline">{currentCurrency?.symbol} {currentCurrency?.code}</span>
         <span className="md:hidden">{currentCurrency?.symbol}</span>
       </button>

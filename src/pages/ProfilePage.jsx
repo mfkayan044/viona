@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useReviews } from '../contexts/ReviewContext';
 import { useToast } from '../contexts/ToastContext';
-import { User, Mail, Phone, Lock, MapPin, Trash2, Plus, Camera, Upload } from 'lucide-react';
+import { User, Mail, Phone, Lock, MapPin, Trash2, Plus, Camera, Upload, Star } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
@@ -10,9 +11,10 @@ import { supabase } from '../lib/supabase';
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, updateProfile, addAddress, removeAddress, changePassword } = useAuth();
+  const { getUserReviews, deleteReview } = useReviews();
   const toast = useToast();
 
-  const [activeTab, setActiveTab] = useState('info'); // info, addresses, password
+  const [activeTab, setActiveTab] = useState('info'); // info, addresses, password, reviews
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -238,6 +240,15 @@ const ProfilePage = () => {
                   Adreslerim
                 </button>
                 <button
+                  onClick={() => setActiveTab('reviews')}
+                  className={`w-full text-left px-4 py-3 text-sm flex items-center gap-2 transition ${
+                    activeTab === 'reviews' ? 'bg-black text-white' : 'hover:bg-neutral-100'
+                  }`}
+                >
+                  <Star size={16} />
+                  Yorumlarım
+                </button>
+                <button
                   onClick={() => setActiveTab('password')}
                   className={`w-full text-left px-4 py-3 text-sm flex items-center gap-2 transition ${
                     activeTab === 'password' ? 'bg-black text-white' : 'hover:bg-neutral-100'
@@ -449,6 +460,61 @@ const ProfilePage = () => {
                       Şifreyi Değiştir
                     </button>
                   </form>
+                </div>
+              )}
+
+              {/* Reviews Tab */}
+              {activeTab === 'reviews' && (
+                <div>
+                  <h2 className="text-2xl font-light uppercase tracking-wider mb-6">
+                    Yorumlarım
+                  </h2>
+                  <div className="space-y-4">
+                    {getUserReviews(user.email).length > 0 ? (
+                      getUserReviews(user.email).map(review => (
+                        <div key={review.id} className="border border-neutral-200 p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map(star => (
+                                    <Star
+                                      key={star}
+                                      size={16}
+                                      className={star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-neutral-300'}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-sm text-neutral-500">
+                                  {new Date(review.created_at).toLocaleDateString('tr-TR')}
+                                </span>
+                              </div>
+                              <p className="text-neutral-700">{review.comment}</p>
+                            </div>
+                            <button
+                              onClick={async () => {
+                                if (window.confirm('Bu yorumu silmek istediğinize emin misiniz?')) {
+                                  try {
+                                    await deleteReview(review.id);
+                                    toast.success('Yorum silindi');
+                                  } catch (error) {
+                                    toast.error('Yorum silinemedi');
+                                  }
+                                }
+                              }}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-12 text-neutral-500">
+                        Henüz yorum yapmadınız
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

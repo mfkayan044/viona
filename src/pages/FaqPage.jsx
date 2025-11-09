@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useFaq } from '../contexts/FaqContext';
 import { ChevronDown, ChevronUp, HelpCircle, Search } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const FaqPage = () => {
+  const navigate = useNavigate();
   const { categories, getFaqsByCategory } = useFaq();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [openFaqId, setOpenFaqId] = useState(null);
@@ -189,12 +191,12 @@ const FaqPage = () => {
           <p className="text-neutral-300 mb-6">
             Sorularınız için bizimle iletişime geçebilirsiniz
           </p>
-          <a
-            href="/contact"
+          <button
+            onClick={() => navigate('/contact')}
             className="inline-block px-8 py-3 bg-white text-black hover:bg-neutral-100 transition-colors uppercase tracking-wider text-sm"
           >
             İletişime Geç
-          </a>
+          </button>
         </div>
       </div>
 
