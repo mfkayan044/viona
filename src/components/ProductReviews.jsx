@@ -25,7 +25,7 @@ const ProductReviews = ({ productId }) => {
   const reviews = getProductReviews(productId);
   const averageRating = getAverageRating(productId);
   const distribution = getRatingDistribution(productId);
-  const userHasReviewed = user ? hasUserReviewed(productId, user.email) : false;
+  const userHasReviewed = user ? hasUserReviewed(productId, user.id) : false;
 
   // Filtreli yorumlar
   const filteredReviews = filterRating === 0 
@@ -42,7 +42,7 @@ const ProductReviews = ({ productId }) => {
     }
   });
 
-  const handleSubmitReview = (e) => {
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
 
     if (!isAuthenticated) {
@@ -65,19 +65,25 @@ const ProductReviews = ({ productId }) => {
       return;
     }
 
-    addReview({
-      productId,
-      userEmail: user.email,
-      userName: user.name || user.email.split('@')[0],
-      userAvatar: user.avatar,
-      rating,
-      comment: comment.trim()
-    });
+    try {
+      await addReview({
+        productId,
+        userId: user.id, // user_id ekle
+        userEmail: user.email,
+        userName: user.name || user.email.split('@')[0],
+        userAvatar: user.avatar,
+        rating,
+        comment: comment.trim()
+      });
 
-    toast.success('Yorumunuz eklendi! 🎉');
-    setRating(0);
-    setComment('');
-    setShowReviewForm(false);
+      toast.success('Yorumunuz eklendi! 🎉');
+      setRating(0);
+      setComment('');
+      setShowReviewForm(false);
+    } catch (error) {
+      console.error('Review submit error:', error);
+      toast.error('Yorum eklenirken hata oluştu!');
+    }
   };
 
   const StarRating = ({ value, onChange, readonly = false, size = 24 }) => {
@@ -255,17 +261,15 @@ const ProductReviews = ({ productId }) => {
           sortedReviews.map(review => (
             <div key={review.id} className="border-b border-neutral-200 pb-6">
               <div className="flex items-start gap-4">
-                <img
-                  src={review.userAvatar}
-                  alt={review.userName}
-                  className="w-12 h-12 rounded-full"
-                />
+                <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center">
+                  <UserIcon size={24} className="text-neutral-400" />
+                </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h4 className="font-medium">{review.userName}</h4>
+                      <h4 className="font-medium">{review.user_name || 'Anonim'}</h4>
                       <p className="text-xs text-neutral-500">
-                        {new Date(review.date).toLocaleDateString('tr-TR', {
+                        {new Date(review.created_at).toLocaleDateString('tr-TR', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
@@ -280,7 +284,7 @@ const ProductReviews = ({ productId }) => {
                     className="flex items-center gap-2 text-sm text-neutral-500 hover:text-black transition"
                   >
                     <ThumbsUp size={14} />
-                    Faydalı ({review.helpful || 0})
+                    Faydalı ({review.helpful_count || 0})
                   </button>
                 </div>
               </div>

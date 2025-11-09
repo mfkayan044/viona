@@ -124,12 +124,57 @@ export const DashboardProvider = ({ children }) => {
     });
   };
 
-  const calculateRecentOrders = () => {
-    // Son 5 siparişi al ve ters çevir (en yeni başta)
-    const recent = [...orders]
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .slice(0, 5);
-    setRecentOrders(recent);
+  const calculateRecentOrders = async () => {
+    try {
+      // Supabase'den son 5 siparişi çek (user bilgisiyle birlikte)
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          id,
+          order_number,
+          customer_name,
+          customer_email,
+          total,
+          status,
+          created_at,
+          user_id,
+          users:user_id (
+            name,
+            email
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+
+      // Verileri formatla
+      const formattedOrders = data.map(order => ({
+        id: order.id,
+        orderNumber: order.order_number || `VN${String(order.id).slice(0, 8).toUpperCase()}`,
+        customerName: order.customer_name || order.users?.name || order.customer_email || 'Misafir',
+        total: order.total,
+        status: order.status,
+        createdAt: order.created_at
+      }));
+
+      setRecentOrders(formattedOrders);
+    } catch (error) {
+      console.error('Recent orders load error:', error);
+      // Fallback: localStorage'dan
+      const recent = [...orders]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+        .map(order => ({
+          id: order.id,
+          orderNumber: order.orderNumber || `VN${String(order.id).slice(0, 8).toUpperCase()}`,
+          customerName: order.customerName || 'Misafir',
+          total: order.total,
+          status: order.status,
+          createdAt: order.createdAt
+        }));
+      setRecentOrders(recent);
+    }
   };
 
   const calculateSalesData = () => {

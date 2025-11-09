@@ -10,11 +10,18 @@ const FilterPanel = ({ filters, onFilterChange, products }) => {
   });
 
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      category: section === 'category' ? !prev.category : false,
-      price: section === 'price' ? !prev.price : false,
-      color: section === 'color' ? !prev.color : false
-    }));
+    setExpandedSections(prev => {
+      // Eğer tıklanan section açıksa, kapat
+      if (prev[section]) {
+        return { ...prev, [section]: false };
+      }
+      // Değilse, hepsini kapat ve sadece tıklanını aç
+      return {
+        category: section === 'category',
+        price: section === 'price',
+        color: section === 'color'
+      };
+    });
   };
 
   // Ürünlerden kategorileri ve renkleri otomatik çıkar

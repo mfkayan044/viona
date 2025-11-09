@@ -424,15 +424,18 @@ export const reviewService = {
       .from('reviews')
       .insert([{
         product_id: review.productId,
+        user_id: review.userId, // user_id ekle
         user_name: review.userName,
-        user_email: review.userEmail,
         rating: review.rating,
         comment: review.comment
       }])
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Review insert error:', error);
+      throw error;
+    }
     return data;
   },
 

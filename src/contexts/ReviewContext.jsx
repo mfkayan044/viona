@@ -39,11 +39,17 @@ export const ReviewProvider = ({ children }) => {
         productId: reviewData.productId,
         userName: reviewData.userName,
         userEmail: reviewData.userEmail,
+        userId: reviewData.userId, // user_id ekle
         rating: reviewData.rating,
         comment: reviewData.comment
       });
 
+      // State'i güncelle
       setReviews(prev => [newReview, ...prev]);
+      
+      // Başarıyla eklendi, yeniden yükle
+      await loadReviews();
+      
       return newReview;
     } catch (error) {
       console.error('Add review error:', error);
@@ -83,14 +89,14 @@ export const ReviewProvider = ({ children }) => {
   };
 
   // Kullanıcının yorumlarını getir
-  const getUserReviews = (userEmail) => {
-    return reviews.filter(review => review.user_email === userEmail);
+  const getUserReviews = (userId) => {
+    return reviews.filter(review => review.user_id === userId);
   };
 
   // Kullanıcı bu ürün için yorum yapmış mı?
-  const hasUserReviewed = (productId, userEmail) => {
+  const hasUserReviewed = (productId, userId) => {
     return reviews.some(
-      review => review.product_id === productId && review.user_email === userEmail
+      review => review.product_id === productId && review.user_id === userId
     );
   };
 

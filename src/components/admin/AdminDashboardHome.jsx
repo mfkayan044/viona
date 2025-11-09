@@ -193,10 +193,10 @@ export default function AdminDashboardHome() {
             <tbody className="divide-y divide-neutral-200">
               {recentOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-neutral-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    #{order.id ? String(order.id).slice(0, 8).toUpperCase() : 'N/A'}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {order.orderNumber}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{order.customerName || 'Misafir'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{order.customerName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     {(order.total || 0).toLocaleString('tr-TR')} ₺
                   </td>
@@ -212,7 +212,13 @@ export default function AdminDashboardHome() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                    {new Date(order.createdAt).toLocaleDateString('tr-TR')}
+                    {new Date(order.createdAt).toLocaleDateString('tr-TR', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </td>
                 </tr>
               ))}
