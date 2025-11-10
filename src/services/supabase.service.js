@@ -97,7 +97,7 @@ export const orderService = {
     const { data, error } = await supabase
       .from('orders')
       .insert([order])
-      .select()
+      .select('*') // Tüm kolonları al (order_number dahil)
       .single();
     
     if (error) throw error;

@@ -33,17 +33,21 @@ export default function AdminUsers() {
   // Kullanıcı istatistiklerini yükle
   useEffect(() => {
     const loadUserStats = async () => {
+      console.log('🔄 Kullanıcı istatistikleri yükleniyor...');
       const statsMap = {};
       for (const user of users) {
-        statsMap[user.id] = await getUserStats(user.id);
+        const stats = await getUserStats(user.id);
+        console.log(`📊 ${user.name} stats:`, stats);
+        statsMap[user.id] = stats;
       }
       setUserStats(statsMap);
+      console.log('✅ Tüm kullanıcı istatistikleri yüklendi:', statsMap);
     };
 
     if (users.length > 0) {
       loadUserStats();
     }
-  }, [users]);
+  }, [users, getUserStats]);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = searchQuery === '' || 

@@ -86,19 +86,13 @@ export const OrderProvider = ({ children }) => {
       // Supabase'e sipariş kaydet
       const created = await orderService.create(newOrder);
       console.log('✅ Sipariş Supabase\'e kaydedildi:', created);
+      console.log('📋 Order Number:', created.order_number);
 
-      // order_number trigger tarafından oluşturulduğu için tekrar fetch et
+      // order_number kontrolü
       if (!created.order_number) {
-        const { data: refreshedOrder } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('id', created.id)
-          .single();
-        
-        if (refreshedOrder) {
-          created.order_number = refreshedOrder.order_number;
-          console.log('✅ Order number alındı:', created.order_number);
-        }
+        console.error('❌ Order number oluşturulmadı! Trigger çalışmıyor olabilir.');
+        // Fallback: Manuel order number oluştur
+        created.order_number = `VN${Date.now().toString().slice(-8)}`;
       }
 
       // Stokları güncelle
