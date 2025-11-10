@@ -53,29 +53,34 @@ export const OrderProvider = ({ children }) => {
     
     loadOrders();
 
-    // ✅ Realtime sipariş güncellemeleri
-    console.log('📞 Creating orders channel...');
-    const channel = supabase.channel('orders-changes');
-    console.log('📞 Channel created:', channel);
-    
-    channel
+    // ⚠️ WORKAROUND: Realtime WebSocket bağlanamıyor, polling kullanıyoruz
+    // Her 5 saniyede bir kontrol et
+    const pollingInterval = setInterval(() => {
+      console.log('� Polling orders...');
+      loadOrders();
+    }, 5000); // 5 saniye
+
+    // Realtime denemesi devam ediyor (arka planda)
+    console.log('📞 Attempting realtime connection...');
+    const channel = supabase
+      .channel('orders-db-changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
         (payload) => {
-          console.log('🔔 Sipariş güncellendi:', payload);
-          loadOrders(); // Siparişleri yeniden yükle
+          console.log('✅ Realtime ÇALIŞTI! Sipariş güncellendi:', payload);
+          // Polling'i durdur, realtime çalışıyor
+          clearInterval(pollingInterval);
+          loadOrders();
         }
       )
-      .subscribe();
-    
-    // Subscribe tamamlandığında çalışacak
-    channel.on('system', {}, (payload) => {
-      console.log('📡 Orders Channel System Event:', payload);
-    });
+      .subscribe((status) => {
+        console.log('📡 Realtime Status:', status);
+      });
 
     return () => {
-      console.log('🔌 Orders Realtime kapatılıyor');
+      console.log('🔌 Cleaning up...');
+      clearInterval(pollingInterval);
       supabase.removeChannel(channel);
     };
   }, []); // loadOrders stable olduğu için dependency'e eklemeye gerek yok

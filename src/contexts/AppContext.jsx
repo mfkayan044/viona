@@ -161,33 +161,38 @@ export const AppProvider = ({ children }) => {
     
     loadProducts();
 
-    // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)
-    console.log('📞 Creating products channel...');
-    const channel = supabase.channel('products-changes');
-    console.log('📞 Channel created:', channel);
-    
-    channel
+    // ⚠️ WORKAROUND: Realtime WebSocket bağlanamıyor, polling kullanıyoruz
+    // Her 5 saniyede bir kontrol et
+    const pollingInterval = setInterval(() => {
+      console.log('� Polling products...');
+      loadProducts();
+    }, 5000); // 5 saniye
+
+    // Realtime denemesi devam ediyor (arka planda)
+    console.log('📞 Attempting realtime connection...');
+    const channel = supabase
+      .channel('products-db-changes')
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'products' },
         (payload) => {
-          console.log('🔔 Ürün güncellendi (stok):', payload);
+          console.log('✅ Realtime ÇALIŞTI! Ürün güncellendi:', payload);
+          // Polling'i durdur, realtime çalışıyor
+          clearInterval(pollingInterval);
           
-          // Sadece güncellenen ürünü state'te güncelle (tüm listeyi yeniden yüklemek yerine)
+          // Sadece güncellenen ürünü state'te güncelle
           setProducts(prev => 
             prev.map(p => p.id === payload.new.id ? payload.new : p)
           );
         }
       )
-      .subscribe();
-    
-    // Subscribe tamamlandığında çalışacak
-    channel.on('system', {}, (payload) => {
-      console.log('📡 Products Channel System Event:', payload);
-    });
+      .subscribe((status) => {
+        console.log('📡 Products Realtime Status:', status);
+      });
 
     return () => {
-      console.log('🔌 Products Realtime kapatılıyor');
+      console.log('🔌 Cleaning up...');
+      clearInterval(pollingInterval);
       supabase.removeChannel(channel);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
