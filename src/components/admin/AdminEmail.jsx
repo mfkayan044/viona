@@ -158,11 +158,41 @@ const AdminEmail = () => {
     setSending(true);
 
     try {
-      // Gerçek mail gönderimi (Zoho Mail + Supabase Edge Function)
+      // Mesajı HTML formatına çevir (paragraflar için)
+      const htmlMessage = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; white-space: pre-wrap; }
+    .footer { background: #f8f8f8; padding: 20px; text-align: center; color: #666; font-size: 12px; border-radius: 0 0 10px 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>VIONA</h1>
+    </div>
+    <div class="content">
+${emailData.message}
+    </div>
+    <div class="footer">
+      <p><strong>VIONA</strong> | Moda & Stil</p>
+      <p>Bu maili almak istemiyorsanız, <a href="mailto:info@viona.com.tr">info@viona.com.tr</a> adresine yazabilirsiniz.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      // Gerçek mail gönderimi (Brevo SMTP + Vercel API)
       await emailService.sendBulkEmail({
         recipients,
         subject: emailData.subject,
-        message: emailData.message
+        message: htmlMessage
       });
 
       // Mail geçmişine kaydet

@@ -318,6 +318,9 @@ export const emailService = {
         <p><strong>İlk Alışverişinize Özel:</strong></p>
         <p style="font-size: 20px; color: #667eea; margin: 0;">%15 İndirim!</p>
       </div>
+      <div class="code">
+        İndirim Kodu: <strong>VIONA15</strong>
+      </div>
       <p>Şık ve kaliteli ürünlerimizi keşfetmeye hemen başlayabilirsiniz.</p>
       <p style="text-align: center;">
         <a href="https://viona-woad.vercel.app" class="button">Alışverişe Başla</a>

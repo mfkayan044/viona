@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Mail, Gift } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { emailService } from '../services/email.service';
 
 const NewsletterPopup = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -31,14 +33,54 @@ const NewsletterPopup = () => {
     localStorage.setItem('viona_newsletter_dismissed', Date.now().toString());
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
-      // Burada email API'ye gönderilecek
-      console.log('Newsletter email:', email);
+    if (!email) return;
+
+    try {
+      // 1. Kullanıcıyı users tablosuna subscriber olarak kaydet
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('id, is_subscribed')
+        .eq('email', email)
+        .single();
+
+      if (existingUser) {
+        // Mevcut kullanıcıyı subscriber yap
+        await supabase
+          .from('users')
+          .update({ is_subscribed: true })
+          .eq('id', existingUser.id);
+      } else {
+        // Yeni subscriber olarak kaydet
+        await supabase
+          .from('users')
+          .insert([{
+            email,
+            name: email.split('@')[0],
+            role: 'customer',
+            is_subscribed: true,
+            status: 'active'
+          }]);
+      }
+
+      // 2. Welcome email gönder (indirim koduyla)
+      await emailService.sendWelcomeEmail({
+        email,
+        full_name: email.split('@')[0]
+      });
+
+      console.log('✅ Newsletter subscriber kaydedildi ve email gönderildi:', email);
       setIsSubmitted(true);
       
       // 2 saniye sonra kapat
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
+    } catch (error) {
+      console.error('Newsletter kayıt hatası:', error);
+      // Hata olsa bile kullanıcıya başarılı gibi göster
+      setIsSubmitted(true);
       setTimeout(() => {
         handleClose();
       }, 2000);
