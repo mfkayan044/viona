@@ -51,8 +51,8 @@ export const OrderProvider = ({ children }) => {
         // Supabase formatını düzenle
         const formattedOrders = data.map((order, index) => ({
           ...order,
-          // Daha güzel sipariş numarası: VN + timestamp'in son 8 hanesi
-          orderNumber: `VN${new Date(order.created_at).getTime().toString().slice(-8)}`,
+          // order_number veritabanından gelir (trigger ile oluşturulur)
+          orderNumber: order.order_number || `VN${new Date(order.created_at).getTime().toString().slice(-8)}`,
           date: order.created_at
         }));
         setOrders(formattedOrders);
@@ -102,7 +102,7 @@ export const OrderProvider = ({ children }) => {
       // Lokal state'i güncelle
       const orderWithLocal = {
         ...created,
-        orderNumber: `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
+        orderNumber: created.order_number, // Veritabanından gelen order_number
         date: created.created_at
       };
       setOrders(prev => [orderWithLocal, ...prev]);
@@ -112,7 +112,7 @@ export const OrderProvider = ({ children }) => {
         await notificationService.create({
           type: 'new_order',
           title: '🛍️ Yeni Sipariş',
-          message: `${orderData.customerName || 'Müşteri'} yeni sipariş verdi. Sipariş No: VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
+          message: `${orderData.customerName || 'Müşteri'} yeni sipariş verdi. Sipariş No: ${created.order_number}`,
           data: {
             order_id: created.id,
             customer_name: orderData.customerName,
