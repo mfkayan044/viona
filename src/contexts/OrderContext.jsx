@@ -132,12 +132,18 @@ export const OrderProvider = ({ children }) => {
 
       // ✅ Müşteriye sipariş onay maili gönder
       try {
+        // Adresi string formatına çevir
+        let addressString = orderData.shippingAddress || orderData.shipping_address;
+        if (typeof addressString === 'object' && addressString !== null) {
+          addressString = `${addressString.street || ''}, ${addressString.city || ''}, ${addressString.state || ''} ${addressString.zipCode || ''}`.trim();
+        }
+
         const orderForEmail = {
           order_number: created.order_number || `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
           created_at: created.created_at,
           items: orderData.items,
           total_amount: orderData.total,
-          shipping_address: orderData.shippingAddress || orderData.shipping_address
+          shipping_address: addressString
         };
 
         await emailService.sendOrderConfirmation(orderForEmail, {
@@ -151,12 +157,18 @@ export const OrderProvider = ({ children }) => {
 
       // ✅ Admin'e yeni sipariş bildirimi maili gönder
       try {
+        // Adresi string formatına çevir
+        let addressString = orderData.shippingAddress || orderData.shipping_address;
+        if (typeof addressString === 'object' && addressString !== null) {
+          addressString = `${addressString.street || ''}, ${addressString.city || ''}, ${addressString.state || ''} ${addressString.zipCode || ''}`.trim();
+        }
+
         const orderForEmail = {
           order_number: created.order_number || `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
           created_at: created.created_at,
           items: orderData.items,
           total_amount: orderData.total,
-          shipping_address: orderData.shippingAddress || orderData.shipping_address
+          shipping_address: addressString
         };
 
         await emailService.sendAdminOrderNotification(orderForEmail, {
@@ -180,6 +192,13 @@ export const OrderProvider = ({ children }) => {
   // Sipariş durumu güncelle
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
+      // Sipariş bilgisini al
+      const order = orders.find(o => o.id === orderId);
+      if (!order) {
+        throw new Error('Sipariş bulunamadı');
+      }
+
+      // Durumu güncelle
       await orderService.updateStatus(orderId, newStatus);
       console.log('✅ Sipariş durumu güncellendi:', newStatus);
       
@@ -189,6 +208,24 @@ export const OrderProvider = ({ children }) => {
           order.id === orderId ? { ...order, status: newStatus } : order
         )
       );
+
+      // Müşteriye durum güncelleme maili gönder
+      try {
+        await emailService.sendOrderStatusUpdate(
+          {
+            order_number: order.order_number || order.orderNumber,
+            id: order.id
+          },
+          {
+            email: order.customer_email,
+            full_name: order.customer_name
+          },
+          newStatus
+        );
+        console.log('✅ Müşteriye durum güncelleme maili gönderildi');
+      } catch (emailError) {
+        console.warn('❌ Durum güncelleme maili gönderilemedi:', emailError);
+      }
     } catch (error) {
       console.error('❌ Sipariş durumu güncellenirken hata:', error);
       alert('Sipariş durumu güncellenirken bir hata oluştu!');

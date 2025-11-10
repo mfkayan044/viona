@@ -170,6 +170,70 @@ export const emailService = {
     }
   },
 
+  // Sipariş durumu güncelleme maili gönder (müşteriye)
+  async sendOrderStatusUpdate(order, user, newStatus) {
+    try {
+      const statusMessages = {
+        pending: { title: '⏳ Siparişiniz Hazırlanıyor', message: 'Siparişiniz alındı ve hazırlanıyor.' },
+        processing: { title: '📦 Siparişiniz Hazırlanıyor', message: 'Siparişiniz hazırlanıyor ve yakında kargoya verilecek.' },
+        shipped: { title: '🚚 Siparişiniz Kargoya Verildi', message: 'Siparişiniz kargoya verildi. Kısa sürede elinizde olacak!' },
+        delivered: { title: '✅ Siparişiniz Teslim Edildi', message: 'Siparişiniz başarıyla teslim edildi. Teşekkür ederiz!' },
+        cancelled: { title: '❌ Siparişiniz İptal Edildi', message: 'Siparişiniz iptal edilmiştir.' }
+      };
+
+      const statusInfo = statusMessages[newStatus] || statusMessages.pending;
+
+      const htmlMessage = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; }
+    .status-box { background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+    .footer { background: #f8f8f8; padding: 20px; text-align: center; color: #666; font-size: 12px; border-radius: 0 0 10px 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>${statusInfo.title}</h1>
+    </div>
+    <div class="content">
+      <p>Merhaba <strong>${user.full_name || 'Değerli Müşterimiz'}</strong>,</p>
+      <div class="status-box">
+        <h2 style="margin: 0; color: #3b82f6;">Sipariş #${order.order_number}</h2>
+        <p style="margin: 10px 0 0 0; font-size: 16px;">${statusInfo.message}</p>
+      </div>
+      <p>Sipariş durumunuz güncellenmiştir.</p>
+      <p><strong>Yeni Durum:</strong> ${newStatus === 'pending' ? 'Beklemede' : newStatus === 'processing' ? 'Hazırlanıyor' : newStatus === 'shipped' ? 'Kargoda' : newStatus === 'delivered' ? 'Teslim Edildi' : 'İptal Edildi'}</p>
+    </div>
+    <div class="footer">
+      <p>Sorularınız için: <a href="mailto:info@viona.com.tr">info@viona.com.tr</a></p>
+      <p><strong>VIONA</strong> | Moda & Stil</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      await this.sendEmail({
+        recipients: user.email,
+        recipientName: user.full_name,
+        subject: `${statusInfo.title} - #${order.order_number}`,
+        message: htmlMessage,
+        templateType: 'orderStatusUpdate',
+        data: { orderNumber: order.order_number, status: newStatus }
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Order status update email error:', error);
+      return { success: false, error };
+    }
+  },
 
   // Mail template'leri (HTML formatında)
   getTemplate(type, data = {}) {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useOrders } from '../contexts/OrderContext';
 import { userService } from '../services/supabase.service';
+import { supabase } from '../lib/supabase';
 
 const UserManagementContext = createContext();
 
@@ -98,23 +99,44 @@ export const UserManagementProvider = ({ children }) => {
     updateUser(userId, { role: newRole });
   };
 
-  const getUserOrders = (userId) => {
-    return orders.filter(order => order.userId === userId);
+  const getUserOrders = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Kullanıcı siparişleri alınamadı:', error);
+      return [];
+    }
   };
 
-  const getUserStats = (userId) => {
-    const userOrders = getUserOrders(userId);
-    const totalSpent = userOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-    const averageOrderValue = userOrders.length > 0 ? totalSpent / userOrders.length : 0;
-    
-    return {
-      totalOrders: userOrders.length,
-      totalSpent,
-      averageOrderValue,
-      lastOrderDate: userOrders.length > 0 
-        ? new Date(Math.max(...userOrders.map(o => new Date(o.createdAt)))).toISOString()
-        : null
-    };
+  const getUserStats = async (userId) => {
+    try {
+      const userOrders = await getUserOrders(userId);
+      const totalSpent = userOrders.reduce((sum, order) => sum + (order.total_amount || order.total || 0), 0);
+      const averageOrderValue = userOrders.length > 0 ? totalSpent / userOrders.length : 0;
+      
+      return {
+        totalOrders: userOrders.length,
+        totalSpent,
+        averageOrderValue,
+        lastOrderDate: userOrders.length > 0 
+          ? new Date(Math.max(...userOrders.map(o => new Date(o.created_at)))).toISOString()
+          : null
+      };
+    } catch (error) {
+      console.error('Kullanıcı istatistikleri alınamadı:', error);
+      return {
+        totalOrders: 0,
+        totalSpent: 0,
+        averageOrderValue: 0,
+        lastOrderDate: null
+      };
+    }
   };
 
   const getActiveUsers = () => {

@@ -158,31 +158,87 @@ const AdminEmail = () => {
     setSending(true);
 
     try {
-      // Mesajı HTML formatına çevir (paragraflar için)
+      // Mesajı satırlara böl ve HTML paragraflarına çevir
+      const messageLines = emailData.message.split('\n').filter(line => line.trim());
+      const messageParagraphs = messageLines.map(line => `      <p>${line}</p>`).join('\n');
+      
+      // Zengin HTML template
       const htmlMessage = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-    .content { background: #ffffff; padding: 30px; border: 1px solid #e0e0e0; white-space: pre-wrap; }
-    .footer { background: #f8f8f8; padding: 20px; text-align: center; color: #666; font-size: 12px; border-radius: 0 0 10px 10px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.8; color: #333; margin: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: white; }
+    .header { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      color: white; 
+      padding: 40px 30px; 
+      text-align: center; 
+      border-radius: 0; 
+    }
+    .header h1 { 
+      margin: 0; 
+      font-size: 32px; 
+      font-weight: 300; 
+      letter-spacing: 3px; 
+      text-transform: uppercase;
+    }
+    .header p { 
+      margin: 10px 0 0 0; 
+      font-size: 14px; 
+      opacity: 0.9; 
+      letter-spacing: 1px;
+    }
+    .content { 
+      background: #ffffff; 
+      padding: 40px 30px; 
+      border-left: 1px solid #e0e0e0;
+      border-right: 1px solid #e0e0e0;
+    }
+    .content p { 
+      margin: 0 0 15px 0; 
+      color: #444; 
+      font-size: 15px;
+      line-height: 1.8;
+    }
+    .content p:last-child { margin-bottom: 0; }
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+      margin: 30px 0;
+    }
+    .footer { 
+      background: #2d3748; 
+      color: #cbd5e0;
+      padding: 30px; 
+      text-align: center; 
+      font-size: 13px;
+      border-radius: 0;
+    }
+    .footer p { margin: 5px 0; }
+    .footer strong { color: white; font-size: 16px; letter-spacing: 2px; }
+    .footer a { color: #667eea; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>VIONA</h1>
+      <p>Moda & Stil</p>
     </div>
     <div class="content">
-${emailData.message}
+${messageParagraphs}
     </div>
+    <div class="divider"></div>
     <div class="footer">
-      <p><strong>VIONA</strong> | Moda & Stil</p>
-      <p>Bu maili almak istemiyorsanız, <a href="mailto:info@viona.com.tr">info@viona.com.tr</a> adresine yazabilirsiniz.</p>
+      <p><strong>VIONA</strong></p>
+      <p>Size daha iyi hizmet verebilmek için buradayız.</p>
+      <p style="margin-top: 15px;">
+        <a href="mailto:info@viona.com.tr">info@viona.com.tr</a>
+      </p>
     </div>
   </div>
 </body>

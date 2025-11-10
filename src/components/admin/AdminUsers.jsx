@@ -21,6 +21,7 @@ export default function AdminUsers() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [userStats, setUserStats] = useState({}); // Kullanıcı istatistikleri için state
 
   const [newUser, setNewUser] = useState({
     name: '',
@@ -28,6 +29,21 @@ export default function AdminUsers() {
     phone: '',
     role: 'customer'
   });
+
+  // Kullanıcı istatistiklerini yükle
+  useEffect(() => {
+    const loadUserStats = async () => {
+      const statsMap = {};
+      for (const user of users) {
+        statsMap[user.id] = await getUserStats(user.id);
+      }
+      setUserStats(statsMap);
+    };
+
+    if (users.length > 0) {
+      loadUserStats();
+    }
+  }, [users]);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = searchQuery === '' || 
@@ -185,7 +201,7 @@ export default function AdminUsers() {
               </thead>
               <tbody className="divide-y divide-neutral-200">
                 {filteredUsers.map((user) => {
-                  const stats = getUserStats(user.id);
+                  const stats = userStats[user.id] || { totalOrders: 0, totalSpent: 0 };
                   return (
                     <tr key={user.id} className="hover:bg-neutral-50 transition-colors">
                       <td className="px-6 py-4">
@@ -382,12 +398,12 @@ export default function AdminUsers() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-neutral-50 p-4">
                       <p className="text-sm text-neutral-500 uppercase tracking-wider mb-1">Toplam Sipariş</p>
-                      <p className="text-2xl font-light">{getUserStats(selectedUser.id).totalOrders}</p>
+                      <p className="text-2xl font-light">{(userStats[selectedUser.id] || { totalOrders: 0 }).totalOrders}</p>
                     </div>
                     <div className="bg-neutral-50 p-4">
                       <p className="text-sm text-neutral-500 uppercase tracking-wider mb-1">Toplam Harcama</p>
                       <p className="text-2xl font-light">
-                        {getUserStats(selectedUser.id).totalSpent.toLocaleString('tr-TR')} ₺
+                        {(userStats[selectedUser.id] || { totalSpent: 0 }).totalSpent.toLocaleString('tr-TR')} ₺
                       </p>
                     </div>
                   </div>
