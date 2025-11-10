@@ -54,7 +54,9 @@ export const OrderProvider = ({ children }) => {
     loadOrders();
 
     // ✅ Realtime sipariş güncellemeleri
+    console.log('📞 Creating orders channel...');
     const channel = supabase.channel('orders-changes');
+    console.log('📞 Channel created:', channel);
     
     channel
       .on(
@@ -65,10 +67,19 @@ export const OrderProvider = ({ children }) => {
           loadOrders(); // Siparişleri yeniden yükle
         }
       )
-      .subscribe((status) => {
+      .subscribe((status, err) => {
         console.log('📡 Orders Realtime Status:', status);
+        if (err) {
+          console.error('❌ Orders Realtime Error:', err);
+        }
         if (status === 'SUBSCRIBED') {
           console.log('✅ Orders Realtime BAŞARILI');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Orders Realtime: Channel Error');
+        } else if (status === 'TIMED_OUT') {
+          console.error('❌ Orders Realtime: Timeout');
+        } else if (status === 'CLOSED') {
+          console.warn('⚠️ Orders Realtime: Closed');
         }
       });
 

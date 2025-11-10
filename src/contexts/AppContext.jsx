@@ -162,7 +162,9 @@ export const AppProvider = ({ children }) => {
     loadProducts();
 
     // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)
+    console.log('📞 Creating products channel...');
     const channel = supabase.channel('products-changes');
+    console.log('📞 Channel created:', channel);
     
     channel
       .on(
@@ -177,10 +179,19 @@ export const AppProvider = ({ children }) => {
           );
         }
       )
-      .subscribe((status) => {
+      .subscribe((status, err) => {
         console.log('📡 Products Realtime Status:', status);
+        if (err) {
+          console.error('❌ Products Realtime Error:', err);
+        }
         if (status === 'SUBSCRIBED') {
           console.log('✅ Products Realtime BAŞARILI');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Products Realtime: Channel Error');
+        } else if (status === 'TIMED_OUT') {
+          console.error('❌ Products Realtime: Timeout');
+        } else if (status === 'CLOSED') {
+          console.warn('⚠️ Products Realtime: Closed');
         }
       });
 
