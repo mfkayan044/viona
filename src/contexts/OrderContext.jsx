@@ -67,25 +67,16 @@ export const OrderProvider = ({ children }) => {
           loadOrders(); // Siparişleri yeniden yükle
         }
       )
-      .subscribe((status, err) => {
-        console.log('📡 Orders Realtime Status:', status);
-        if (err) {
-          console.error('❌ Orders Realtime Error:', err);
-        }
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Orders Realtime BAŞARILI');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Orders Realtime: Channel Error');
-        } else if (status === 'TIMED_OUT') {
-          console.error('❌ Orders Realtime: Timeout');
-        } else if (status === 'CLOSED') {
-          console.warn('⚠️ Orders Realtime: Closed');
-        }
-      });
+      .subscribe();
+    
+    // Subscribe tamamlandığında çalışacak
+    channel.on('system', {}, (payload) => {
+      console.log('📡 Orders Channel System Event:', payload);
+    });
 
     return () => {
       console.log('🔌 Orders Realtime kapatılıyor');
-      channel.unsubscribe();
+      supabase.removeChannel(channel);
     };
   }, []); // loadOrders stable olduğu için dependency'e eklemeye gerek yok
 

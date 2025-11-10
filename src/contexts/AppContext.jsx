@@ -179,25 +179,16 @@ export const AppProvider = ({ children }) => {
           );
         }
       )
-      .subscribe((status, err) => {
-        console.log('📡 Products Realtime Status:', status);
-        if (err) {
-          console.error('❌ Products Realtime Error:', err);
-        }
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Products Realtime BAŞARILI');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Products Realtime: Channel Error');
-        } else if (status === 'TIMED_OUT') {
-          console.error('❌ Products Realtime: Timeout');
-        } else if (status === 'CLOSED') {
-          console.warn('⚠️ Products Realtime: Closed');
-        }
-      });
+      .subscribe();
+    
+    // Subscribe tamamlandığında çalışacak
+    channel.on('system', {}, (payload) => {
+      console.log('📡 Products Channel System Event:', payload);
+    });
 
     return () => {
       console.log('🔌 Products Realtime kapatılıyor');
-      channel.unsubscribe();
+      supabase.removeChannel(channel);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
