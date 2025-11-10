@@ -162,8 +162,9 @@ export const AppProvider = ({ children }) => {
     loadProducts();
 
     // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)
-    const productsSubscription = supabase
-      .channel('products-changes')
+    const channel = supabase.channel('products-changes');
+    
+    channel
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'products' },
@@ -177,12 +178,15 @@ export const AppProvider = ({ children }) => {
         }
       )
       .subscribe((status) => {
-        console.log('📡 Products Realtime:', status);
+        console.log('📡 Products Realtime Status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Products Realtime BAŞARILI');
+        }
       });
 
     return () => {
       console.log('🔌 Products Realtime kapatılıyor');
-      productsSubscription.unsubscribe();
+      channel.unsubscribe();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

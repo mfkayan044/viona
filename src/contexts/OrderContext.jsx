@@ -54,8 +54,9 @@ export const OrderProvider = ({ children }) => {
     loadOrders();
 
     // ✅ Realtime sipariş güncellemeleri
-    const ordersSubscription = supabase
-      .channel('orders-changes')
+    const channel = supabase.channel('orders-changes');
+    
+    channel
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
@@ -65,12 +66,15 @@ export const OrderProvider = ({ children }) => {
         }
       )
       .subscribe((status) => {
-        console.log('📡 Orders Realtime:', status);
+        console.log('📡 Orders Realtime Status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Orders Realtime BAŞARILI');
+        }
       });
 
     return () => {
       console.log('🔌 Orders Realtime kapatılıyor');
-      ordersSubscription.unsubscribe();
+      channel.unsubscribe();
     };
   }, []); // loadOrders stable olduğu için dependency'e eklemeye gerek yok
 
