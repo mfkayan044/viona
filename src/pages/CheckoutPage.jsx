@@ -6,6 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useCoupon } from '../contexts/CouponContext';
 import { usePayment } from '../contexts/PaymentContext';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import { sendOrderConfirmationEmail } from '../services/emailService';
 import { ShoppingBag, CreditCard, Truck, MapPin, User, Phone, Mail, ChevronRight, X, Tag, Check } from 'lucide-react';
 import Header from '../components/Header';
@@ -187,8 +188,27 @@ const CheckoutPage = () => {
         notes: formData.orderNotes
       });
 
+      // ✅ Kupon kullanımını kaydet
       if (appliedCoupon) {
-        useCouponCode(appliedCoupon.id);
+        try {
+          const { error } = await supabase
+            .from('coupon_usage')
+            .insert({
+              coupon_code: appliedCoupon.code,
+              user_email: formData.email.toLowerCase(),
+              order_id: order.id,
+              discount_amount: discount
+            });
+
+          if (error) {
+            console.error('Kupon kullanımı kaydedilemedi:', error);
+          } else {
+            console.log('✅ Kupon kullanımı kaydedildi');
+            useCouponCode(appliedCoupon.id);
+          }
+        } catch (error) {
+          console.error('Kupon kayıt hatası:', error);
+        }
       }
 
       // Sipariş onay maili gönder (Production'da aktif olacak)
@@ -613,8 +633,8 @@ const CheckoutPage = () => {
                         placeholder="Kupon kodunu girin"
                       />
                       <button
-                        onClick={() => {
-                          const result = applyCoupon(couponCode, subtotal);
+                        onClick={async () => {
+                          const result = await applyCoupon(couponCode, subtotal, formData.email);
                           if (result.success) {
                             toast.success(result.message);
                             setCouponCode('');

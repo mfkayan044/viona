@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 const CouponContext = createContext();
 
@@ -62,7 +63,7 @@ export const CouponProvider = ({ children }) => {
     localStorage.setItem('coupons', JSON.stringify(coupons));
   }, [coupons]);
 
-  const validateCoupon = (code, cartTotal) => {
+  const validateCoupon = async (code, cartTotal, userEmail) => {
     const coupon = coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
 
     if (!coupon) {
@@ -88,11 +89,35 @@ export const CouponProvider = ({ children }) => {
       };
     }
 
+    // ✅ Kullanıcının bu kuponu daha önce kullanıp kullanmadığını kontrol et
+    if (userEmail) {
+      try {
+        const { data, error } = await supabase
+          .from('coupon_usage')
+          .select('id')
+          .eq('coupon_code', code.toUpperCase())
+          .eq('user_email', userEmail.toLowerCase())
+          .limit(1);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          return { 
+            valid: false, 
+            message: 'Bu kuponu daha önce kullandınız. Her kupon müşteri başına 1 kere kullanılabilir.' 
+          };
+        }
+      } catch (error) {
+        console.error('Kupon kontrolü hatası:', error);
+        // Hata durumunda yine de devam et
+      }
+    }
+
     return { valid: true, coupon };
   };
 
-  const applyCoupon = (code, cartTotal) => {
-    const result = validateCoupon(code, cartTotal);
+  const applyCoupon = async (code, cartTotal, userEmail) => {
+    const result = await validateCoupon(code, cartTotal, userEmail);
     
     if (!result.valid) {
       return { success: false, message: result.message };

@@ -26,7 +26,7 @@ export const OrderProvider = ({ children }) => {
 
     // ✅ Realtime sipariş güncellemeleri
     const ordersSubscription = supabase
-      .channel('public:orders')
+      .channel('orders-changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'orders' },
@@ -35,9 +35,12 @@ export const OrderProvider = ({ children }) => {
           loadOrders(); // Siparişleri yeniden yükle
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Realtime bağlantı durumu:', status);
+      });
 
     return () => {
+      console.log('🔌 Realtime bağlantısı kapatılıyor');
       ordersSubscription.unsubscribe();
     };
   }, []);
