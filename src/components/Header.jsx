@@ -100,12 +100,6 @@ const Header = () => {
             {t('nav.contact')}
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link
-            to="/admin-login"
-            className="text-xs text-neutral-400 hover:text-black transition-all duration-300 uppercase tracking-widest hover:scale-105"
-          >
-            Admin
-          </Link>
         </nav>
         
         <div className="flex items-center gap-2">
@@ -286,15 +280,6 @@ const Header = () => {
             className="text-left text-sm uppercase tracking-widest text-neutral-700 py-3 hover:text-black hover:translate-x-2 transition-all duration-300 border-b border-neutral-100"
           >
             Contact
-          </button>
-          <button
-            onClick={() => {
-              navigate('/admin-login');
-              close();
-            }}
-            className="text-left text-xs uppercase tracking-widest text-neutral-400 py-3 hover:text-black hover:translate-x-2 transition-all duration-300"
-          >
-            Admin
           </button>
         </nav>
       </div>
