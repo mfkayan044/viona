@@ -121,7 +121,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <SEO />
+      <SEO pageKey="home" />
       
       {/* JSON-LD Schema Markup */}
       <script type="application/ld+json">

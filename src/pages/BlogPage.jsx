@@ -4,6 +4,7 @@ import { useBlog } from '../contexts/BlogContext';
 import { Calendar, User, Eye, ArrowRight } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 const BlogPage = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO pageKey="blog" />
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 py-12">
