@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { orderService, productService, notificationService } from '../services/supabase.service';
+import { orderService, productService, notificationService, userService } from '../services/supabase.service';
 import { supabase } from '../lib/supabase';
+import { emailService } from '../services/email.service';
 
 const OrderContext = createContext();
 
@@ -127,6 +128,45 @@ export const OrderProvider = ({ children }) => {
       } catch (notifError) {
         console.error('❌ Bildirim oluşturulamadı:', notifError);
         // Bildirim hatası sipariş sürecini engellemez
+      }
+
+      // ✅ Müşteriye sipariş onay maili gönder
+      try {
+        const orderForEmail = {
+          order_number: created.order_number || `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
+          created_at: created.created_at,
+          items: orderData.items,
+          total_amount: orderData.total,
+          shipping_address: orderData.shippingAddress || orderData.shipping_address
+        };
+
+        await emailService.sendOrderConfirmation(orderForEmail, {
+          email: orderData.customerEmail || orderData.customer_email,
+          full_name: orderData.customerName || orderData.customer_name
+        });
+        console.log('✅ Müşteriye sipariş onay maili gönderildi');
+      } catch (emailError) {
+        console.warn('❌ Sipariş onay maili gönderilemedi:', emailError);
+      }
+
+      // ✅ Admin'e yeni sipariş bildirimi maili gönder
+      try {
+        const orderForEmail = {
+          order_number: created.order_number || `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
+          created_at: created.created_at,
+          items: orderData.items,
+          total_amount: orderData.total,
+          shipping_address: orderData.shippingAddress || orderData.shipping_address
+        };
+
+        await emailService.sendAdminOrderNotification(orderForEmail, {
+          email: orderData.customerEmail || orderData.customer_email,
+          full_name: orderData.customerName || orderData.customer_name,
+          phone: orderData.customerPhone || orderData.customer_phone
+        });
+        console.log('✅ Admine sipariş bildirimi gönderildi');
+      } catch (emailError) {
+        console.warn('❌ Admin sipariş bildirimi gönderilemedi:', emailError);
       }
 
       return orderWithLocal;

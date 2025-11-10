@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { userService } from '../services/supabase.service';
-import { sendWelcomeEmail } from '../services/emailService';
+import { emailService } from '../services/email.service';
 
 const AuthContext = createContext();
 
@@ -124,10 +124,17 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userProfile);
       
-      // 4. Hoşgeldin maili gönder (Production'da aktif olacak)
-      // try {
-      //   await sendWelcomeEmail(email, `${firstName} ${lastName}`);
-      //   console.log('✅ Hoşgeldin maili gönderildi');
+      // 4. Hoşgeldin maili gönder
+      try {
+        await emailService.sendWelcomeEmail({
+          email,
+          full_name: `${firstName} ${lastName}`
+        });
+        console.log('✅ Hoşgeldin maili gönderildi');
+      } catch (emailError) {
+        console.warn('Hoşgeldin maili gönderilemedi:', emailError);
+        // Email hatası kayıt işlemini engellemez
+      }
       // } catch (emailError) {
       //   console.warn('Mail gönderme hatası (kayıt devam etti):', emailError);
       // }
