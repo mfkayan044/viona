@@ -87,6 +87,20 @@ export const OrderProvider = ({ children }) => {
       const created = await orderService.create(newOrder);
       console.log('✅ Sipariş Supabase\'e kaydedildi:', created);
 
+      // order_number trigger tarafından oluşturulduğu için tekrar fetch et
+      if (!created.order_number) {
+        const { data: refreshedOrder } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', created.id)
+          .single();
+        
+        if (refreshedOrder) {
+          created.order_number = refreshedOrder.order_number;
+          console.log('✅ Order number alındı:', created.order_number);
+        }
+      }
+
       // Stokları güncelle
       for (const item of orderData.items) {
         try {
@@ -135,11 +149,18 @@ export const OrderProvider = ({ children }) => {
         // Adresi string formatına çevir
         let addressString = orderData.shippingAddress || orderData.shipping_address;
         if (typeof addressString === 'object' && addressString !== null) {
-          addressString = `${addressString.street || ''}, ${addressString.city || ''}, ${addressString.state || ''} ${addressString.zipCode || ''}`.trim();
+          // CheckoutPage'den gelen format: address, city, district, postalCode
+          const parts = [
+            addressString.address || addressString.street || '',
+            addressString.district || '',
+            addressString.city || addressString.state || '',
+            addressString.postalCode || addressString.zipCode || ''
+          ].filter(part => part.trim());
+          addressString = parts.join(', ');
         }
 
         const orderForEmail = {
-          order_number: created.order_number || `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
+          order_number: created.order_number, // Artık kesinlikle var
           created_at: created.created_at,
           items: orderData.items,
           total_amount: orderData.total,
@@ -160,11 +181,18 @@ export const OrderProvider = ({ children }) => {
         // Adresi string formatına çevir
         let addressString = orderData.shippingAddress || orderData.shipping_address;
         if (typeof addressString === 'object' && addressString !== null) {
-          addressString = `${addressString.street || ''}, ${addressString.city || ''}, ${addressString.state || ''} ${addressString.zipCode || ''}`.trim();
+          // CheckoutPage'den gelen format: address, city, district, postalCode
+          const parts = [
+            addressString.address || addressString.street || '',
+            addressString.district || '',
+            addressString.city || addressString.state || '',
+            addressString.postalCode || addressString.zipCode || ''
+          ].filter(part => part.trim());
+          addressString = parts.join(', ');
         }
 
         const orderForEmail = {
-          order_number: created.order_number || `VN${new Date(created.created_at).getTime().toString().slice(-8)}`,
+          order_number: created.order_number, // Artık kesinlikle var
           created_at: created.created_at,
           items: orderData.items,
           total_amount: orderData.total,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUserManagement } from '../../context/UserManagementContext';
 import { Users, UserPlus, Search, Filter, Shield, Ban, CheckCircle, Trash2, Edit, Eye, Mail, Phone, MapPin, Calendar, DollarSign } from 'lucide-react';
 
