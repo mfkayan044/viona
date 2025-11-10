@@ -42,10 +42,17 @@ const AdminEmail = () => {
       // Supabase'den tüm kullanıcıları çek
       const { data: usersData, error } = await supabase
         .from('users')
-        .select('id, name, email')
+        .select('id, full_name, email')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+
+      // Supabase kullanıcılarını formatla (full_name -> name)
+      const formattedUsers = usersData?.map(u => ({
+        id: u.id,
+        name: u.full_name || u.email,
+        email: u.email
+      })) || [];
 
       // Sipariş vermiş müşterileri ekle
       const orderEmails = orders.map(o => ({
@@ -59,7 +66,7 @@ const AdminEmail = () => {
         .map(email => ({ id: email, name: email, email }));
 
       // Tümünü birleştir ve unique yap
-      const allEmails = [...usersData, ...orderEmails, ...subscribers];
+      const allEmails = [...formattedUsers, ...orderEmails, ...subscribers];
       const uniqueUsers = Array.from(
         new Map(allEmails.filter(u => u.email).map(u => [u.email, u])).values()
       );

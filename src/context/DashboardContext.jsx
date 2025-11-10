@@ -144,12 +144,12 @@ export const DashboardProvider = ({ children }) => {
           if (order.user_id) {
             const { data: userData } = await supabase
               .from('users')
-              .select('name, email')
+              .select('full_name, email')
               .eq('id', order.user_id)
               .single();
             
             if (userData) {
-              userName = userData.name || userData.email || order.customer_name;
+              userName = userData.full_name || userData.email || order.customer_name;
             }
           }
 
