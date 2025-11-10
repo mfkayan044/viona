@@ -71,9 +71,6 @@ export const OrderProvider = ({ children }) => {
       ordersSubscription.unsubscribe();
     };
   }, []); // loadOrders stable olduğu için dependency'e eklemeye gerek yok
-      setLoading(false);
-    }
-  };
 
   // Yeni sipariş oluştur
   const createOrder = async (orderData) => {
