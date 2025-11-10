@@ -99,12 +99,13 @@ export const UserManagementProvider = ({ children }) => {
     updateUser(userId, { role: newRole });
   };
 
-  const getUserOrders = async (userId) => {
+  const getUserOrders = async (userId, userEmail) => {
     try {
+      // user_id ile eşleştir VEYA customer_email ile eşleştir (guest checkout için)
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('user_id', userId);
+        .or(`user_id.eq.${userId},customer_email.eq.${userEmail}`);
 
       if (error) throw error;
       return data || [];
@@ -114,9 +115,9 @@ export const UserManagementProvider = ({ children }) => {
     }
   };
 
-  const getUserStats = async (userId) => {
+  const getUserStats = async (userId, userEmail) => {
     try {
-      const userOrders = await getUserOrders(userId);
+      const userOrders = await getUserOrders(userId, userEmail);
       const totalSpent = userOrders.reduce((sum, order) => sum + (order.total_amount || order.total || 0), 0);
       const averageOrderValue = userOrders.length > 0 ? totalSpent / userOrders.length : 0;
       

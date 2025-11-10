@@ -36,7 +36,7 @@ export default function AdminUsers() {
       console.log('🔄 Kullanıcı istatistikleri yükleniyor...');
       const statsMap = {};
       for (const user of users) {
-        const stats = await getUserStats(user.id);
+        const stats = await getUserStats(user.id, user.email); // Email parametresi eklendi
         console.log(`📊 ${user.name} stats:`, stats);
         statsMap[user.id] = stats;
       }

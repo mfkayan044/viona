@@ -95,22 +95,9 @@ export const OrderProvider = ({ children }) => {
         created.order_number = `VN${Date.now().toString().slice(-8)}`;
       }
 
-      // Stokları güncelle
-      for (const item of orderData.items) {
-        try {
-          // Mevcut ürünü al
-          const product = await productService.getById(item.productId || item.id);
-          if (product) {
-            const newStock = (product.stock || 0) - (item.quantity || 1);
-            // Stok güncellemesi
-            await productService.update(product.id, { stock: Math.max(0, newStock) });
-            console.log(`✅ ${product.name} stoğu güncellendi: ${product.stock} → ${newStock}`);
-          }
-        } catch (error) {
-          console.error('❌ Stok güncellenirken hata:', error);
-          // Stok hatası sipariş sürecini engellemez
-        }
-      }
+      // ℹ️ Stok güncellemesi admin panelinden manuel yapılacak
+      // RLS policy nedeniyle guest checkout'ta 406 hatası veriyor
+      console.log('ℹ️ Stok güncellemesi admin panelinden manuel yapılacak');
 
       // Lokal state'i güncelle
       const orderWithLocal = {
