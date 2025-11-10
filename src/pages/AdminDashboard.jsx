@@ -42,7 +42,7 @@ const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <div className="flex-1 ml-64">
+      <div className="flex-1 lg:ml-64 w-full">
         <Routes>
           <Route path="/" element={<AdminDashboardHome />} />
           <Route path="/products" element={<AdminProducts />} />

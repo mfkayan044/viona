@@ -196,8 +196,8 @@ const ProductDetail = () => {
           </div>
 
           {/* Product Section */}
-          <div className="container mx-auto px-6 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="container mx-auto px-4 sm:px-6 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           
           {/* Image Gallery */}
           <div className="space-y-4">
@@ -215,13 +215,13 @@ const ProductDetail = () => {
                 <>
                   <button
                     onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-20"
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 sm:p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-20 touch-manipulation"
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-20"
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 sm:p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-20 touch-manipulation"
                   >
                     <ChevronRight size={20} />
                   </button>
@@ -230,19 +230,26 @@ const ProductDetail = () => {
 
               {/* Featured Badge */}
               {product.featured && (
-                <div className="absolute top-4 right-4 bg-amber-50 text-amber-900 px-4 py-2 text-xs uppercase tracking-widest z-20">
+                <div className="absolute top-4 right-4 bg-amber-50 text-amber-900 px-3 sm:px-4 py-1.5 sm:py-2 text-xs uppercase tracking-widest z-20">
                   Featured
+                </div>
+              )}
+              
+              {/* Mobile: Image counter */}
+              {productImages.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-xs">
+                  {currentImageIndex + 1} / {productImages.length}
                 </div>
               )}
             </div>
 
-            {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-4 gap-4">
+            {/* Thumbnail Gallery - Hidden on mobile, shown on tablet+ */}
+            <div className="hidden sm:grid grid-cols-4 gap-4">
               {productImages.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`aspect-square bg-neutral-50 overflow-hidden border-2 transition-all ${
+                  className={`aspect-square bg-neutral-50 overflow-hidden border-2 transition-all touch-manipulation ${
                     currentImageIndex === index ? 'border-black' : 'border-transparent hover:border-neutral-300'
                   }`}
                 >
@@ -253,13 +260,13 @@ const ProductDetail = () => {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Title and Price */}
-            <div className="border-b border-neutral-200 pb-6">
-              <h1 className="text-3xl font-light tracking-wider uppercase mb-4">{product.name}</h1>
-              <div className="flex items-center justify-between">
+            <div className="border-b border-neutral-200 pb-4 sm:pb-6">
+              <h1 className="text-2xl sm:text-3xl font-light tracking-wider uppercase mb-3 sm:mb-4">{product.name}</h1>
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <div className="text-2xl font-light">{currentPrice.toLocaleString('tr-TR')} ₺</div>
+                  <div className="text-2xl sm:text-3xl font-light">{currentPrice.toLocaleString('tr-TR')} ₺</div>
                   {currentPrice !== product.price && (
                     <div className="text-sm text-neutral-500 line-through">{product.price.toLocaleString('tr-TR')} ₺</div>
                   )}
@@ -267,26 +274,26 @@ const ProductDetail = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleWishlistToggle}
-                    className={`p-2 border transition-all hover:scale-110 ${
+                    className={`p-3 border transition-all hover:scale-110 touch-manipulation ${
                       isInWishlist(product.id) ? 'border-red-500 text-red-500' : 'border-neutral-300 hover:border-black'
                     }`}
                   >
-                    <Heart size={20} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} />
+                    <Heart size={22} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} />
                   </button>
                   <button
                     onClick={handleAddToComparison}
-                    className={`p-2 border transition-all hover:scale-110 ${
+                    className={`p-3 border transition-all hover:scale-110 touch-manipulation ${
                       isInComparison(product.id) ? 'border-black bg-black text-white' : 'border-neutral-300 hover:border-black'
                     }`}
                     title="Karşılaştırmaya Ekle"
                   >
-                    <Scale size={20} />
+                    <Scale size={22} />
                   </button>
                   <button
                     onClick={handleShare}
-                    className="p-2 border border-neutral-300 hover:border-black transition-all hover:scale-110"
+                    className="p-3 border border-neutral-300 hover:border-black transition-all hover:scale-110 touch-manipulation"
                   >
-                    <Share2 size={20} />
+                    <Share2 size={22} />
                   </button>
                 </div>
               </div>
@@ -295,7 +302,7 @@ const ProductDetail = () => {
             {/* Description */}
             <div>
               <h3 className="text-sm uppercase tracking-widest mb-3 font-light">Ürün Açıklaması</h3>
-              <p className="text-neutral-700 leading-relaxed">{product.description}</p>
+              <p className="text-neutral-700 leading-relaxed text-sm sm:text-base">{product.description}</p>
             </div>
 
             {/* Product Details */}
@@ -349,7 +356,7 @@ const ProductDetail = () => {
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 border transition-all ${
+                      className={`px-5 py-3 border transition-all touch-manipulation min-w-[60px] ${
                         selectedSize === size
                           ? 'border-black bg-black text-white'
                           : 'border-neutral-300 hover:border-black'
@@ -368,28 +375,28 @@ const ProductDetail = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-12 h-12 border border-neutral-300 hover:border-black transition flex items-center justify-center"
+                  className="w-12 h-12 sm:w-14 sm:h-14 border border-neutral-300 hover:border-black transition flex items-center justify-center text-lg touch-manipulation"
                 >
                   −
                 </button>
-                <span className="text-lg font-light w-12 text-center">{quantity}</span>
+                <span className="text-lg sm:text-xl font-light w-12 sm:w-16 text-center">{quantity}</span>
                 <button
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                   disabled={quantity >= product.stock}
-                  className="w-12 h-12 border border-neutral-300 hover:border-black transition flex items-center justify-center disabled:opacity-30"
+                  className="w-12 h-12 sm:w-14 sm:h-14 border border-neutral-300 hover:border-black transition flex items-center justify-center disabled:opacity-30 text-lg touch-manipulation"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* Add to Cart Button */}
+            {/* Add to Cart Button - Larger on mobile */}
             <button
               onClick={handleAddToCart}
               disabled={product.stock === 0}
-              className="w-full bg-black text-white py-4 hover:bg-neutral-800 transition-all duration-300 text-sm uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+              className="w-full bg-black text-white py-5 sm:py-4 hover:bg-neutral-800 transition-all duration-300 text-sm sm:text-base uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group touch-manipulation"
             >
-              <ShoppingBag size={20} className="group-hover:scale-110 transition-transform" />
+              <ShoppingBag size={22} className="group-hover:scale-110 transition-transform" />
               {product.stock === 0 ? 'Stokta Yok' : 'Sepete Ekle'}
             </button>
 
