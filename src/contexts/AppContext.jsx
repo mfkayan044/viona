@@ -135,31 +135,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Supabase'den ürünleri yükle
-  useEffect(() => {
-    loadProducts();
-
-    // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)
-    const productsSubscription = supabase
-      .channel('products-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'products' },
-        (payload) => {
-          console.log('🔔 Ürün güncellendi (stok):', payload);
-          loadProducts(); // Ürünleri yeniden yükle
-        }
-      )
-      .subscribe((status) => {
-        console.log('📡 Products Realtime bağlantı durumu:', status);
-      });
-
-    return () => {
-      console.log('🔌 Products Realtime bağlantısı kapatılıyor');
-      productsSubscription.unsubscribe();
-    };
-  }, []);
-
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -179,6 +154,35 @@ export const AppProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  // Supabase'den ürünleri yükle
+  useEffect(() => {
+    loadProducts();
+
+    // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)
+    const productsSubscription = supabase
+      .channel('products-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'products' },
+        (payload) => {
+          console.log('🔔 Ürün güncellendi (stok):', payload);
+          
+          // Sadece güncellenen ürünü state'te güncelle (tüm listeyi yeniden yüklemek yerine)
+          setProducts(prev => 
+            prev.map(p => p.id === payload.new.id ? payload.new : p)
+          );
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Products Realtime:', status);
+      });
+
+    return () => {
+      console.log('🔌 Products Realtime kapatılıyor');
+      productsSubscription.unsubscribe();
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id);

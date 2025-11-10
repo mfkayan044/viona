@@ -17,34 +17,6 @@ export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Supabase'den siparişleri yükle
-  useEffect(() => {
-    // Eski localStorage verilerini temizle
-    localStorage.removeItem('orders');
-    
-    loadOrders();
-
-    // ✅ Realtime sipariş güncellemeleri
-    const ordersSubscription = supabase
-      .channel('orders-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' },
-        (payload) => {
-          console.log('🔔 Sipariş güncellendi:', payload);
-          loadOrders(); // Siparişleri yeniden yükle
-        }
-      )
-      .subscribe((status) => {
-        console.log('📡 Realtime bağlantı durumu:', status);
-      });
-
-    return () => {
-      console.log('🔌 Realtime bağlantısı kapatılıyor');
-      ordersSubscription.unsubscribe();
-    };
-  }, []);
-
   const loadOrders = async () => {
     try {
       setLoading(true);
@@ -68,6 +40,37 @@ export const OrderProvider = ({ children }) => {
       console.error('❌ Siparişler yüklenirken hata:', error);
       setOrders([]);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  // Supabase'den siparişleri yükle
+  useEffect(() => {
+    // Eski localStorage verilerini temizle
+    localStorage.removeItem('orders');
+    
+    loadOrders();
+
+    // ✅ Realtime sipariş güncellemeleri
+    const ordersSubscription = supabase
+      .channel('orders-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' },
+        (payload) => {
+          console.log('🔔 Sipariş güncellendi:', payload);
+          loadOrders(); // Siparişleri yeniden yükle
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Orders Realtime:', status);
+      });
+
+    return () => {
+      console.log('🔌 Orders Realtime kapatılıyor');
+      ordersSubscription.unsubscribe();
+    };
+  }, []); // loadOrders stable olduğu için dependency'e eklemeye gerek yok
       setLoading(false);
     }
   };
