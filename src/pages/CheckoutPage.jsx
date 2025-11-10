@@ -634,6 +634,12 @@ const CheckoutPage = () => {
                       />
                       <button
                         onClick={async () => {
+                          // Email kontrolü
+                          if (!formData.email || !formData.email.trim()) {
+                            toast.error('Kupon kullanmak için önce email adresinizi girin');
+                            return;
+                          }
+                          
                           const result = await applyCoupon(couponCode, subtotal, formData.email);
                           if (result.success) {
                             toast.success(result.message);

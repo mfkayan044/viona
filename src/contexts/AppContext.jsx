@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { productService, heroImageService, siteSettingsService, categoryService, colorService } from '../services/supabase.service';
+import { supabase } from '../lib/supabase';
 
 const AppContext = createContext();
 
@@ -137,6 +138,26 @@ export const AppProvider = ({ children }) => {
   // Supabase'den ürünleri yükle
   useEffect(() => {
     loadProducts();
+
+    // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)
+    const productsSubscription = supabase
+      .channel('products-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        (payload) => {
+          console.log('🔔 Ürün güncellendi (stok):', payload);
+          loadProducts(); // Ürünleri yeniden yükle
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Products Realtime bağlantı durumu:', status);
+      });
+
+    return () => {
+      console.log('🔌 Products Realtime bağlantısı kapatılıyor');
+      productsSubscription.unsubscribe();
+    };
   }, []);
 
   const loadProducts = async () => {
