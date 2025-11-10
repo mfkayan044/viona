@@ -104,9 +104,7 @@ export const OrderProvider = ({ children }) => {
         created.order_number = `VN${Date.now().toString().slice(-8)}`;
       }
 
-      // ℹ️ Stok güncellemesi admin panelinden manuel yapılacak
-      // RLS policy nedeniyle guest checkout'ta 406 hatası veriyor
-      console.log('ℹ️ Stok güncellemesi admin panelinden manuel yapılacak');
+      console.log('✅ Sipariş oluşturuldu - Stok trigger otomatik çalışacak');
 
       // Lokal state'i güncelle
       const orderWithLocal = {
