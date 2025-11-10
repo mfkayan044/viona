@@ -1,5 +1,5 @@
-import React from 'react';
-import { Package, Settings, Eye, LogOut, ShoppingBag, Tag, FileText, MessageSquare, HelpCircle, Zap, BarChart2, Archive, Users, PieChart, Search, CreditCard, Star, Mail } from 'lucide-react';
+import React, { useState } from 'react';
+import { Package, Settings, Eye, LogOut, ShoppingBag, Tag, FileText, MessageSquare, HelpCircle, Zap, BarChart2, Archive, Users, PieChart, Search, CreditCard, Star, Mail, Menu, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../contexts/AppContext';
 import NotificationBell from './NotificationBell';
@@ -8,6 +8,7 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setIsAdmin } = useApp();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     setIsAdmin(false);
@@ -16,215 +17,76 @@ const AdminSidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  return (
-    <div className="w-64 bg-black text-white p-6 min-h-screen">
+  const handleNavClick = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false); // Close mobile menu after navigation
+  };
+
+  const menuItems = [
+    { path: '/admin/', icon: BarChart2, label: 'Dashboard' },
+    { path: '/admin/products', icon: Package, label: 'Ürünler' },
+    { path: '/admin/orders', icon: ShoppingBag, label: 'Siparişler' },
+    { path: '/admin/inventory', icon: Archive, label: 'Envanter' },
+    { path: '/admin/users', icon: Users, label: 'Kullanıcılar' },
+    { path: '/admin/reports', icon: PieChart, label: 'Raporlar' },
+    { path: '/admin/coupons', icon: Tag, label: 'Kuponlar' },
+    { path: '/admin/flash-sale', icon: Zap, label: 'Flash Sale' },
+    { path: '/admin/blog', icon: FileText, label: 'Blog' },
+    { path: '/admin/reviews', icon: Star, label: 'Yorumlar' },
+    { path: '/admin/contact', icon: MessageSquare, label: 'Mesajlar' },
+    { path: '/admin/faq', icon: HelpCircle, label: 'SSS' },
+    { path: '/admin/seo', icon: Search, label: 'SEO' },
+    { path: '/admin/email', icon: Mail, label: 'Mail Gönder' },
+    { path: '/admin/settings', icon: Settings, label: 'Ayarlar' },
+    { path: '/admin/payment-settings', icon: CreditCard, label: 'Ödeme Yöntemleri' },
+  ];
+
+  const SidebarContent = () => (
+    <>
       <div className="mb-8 border-b border-gray-800 pb-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-light tracking-widest">VIONA</h2>
             <p className="text-gray-500 text-xs mt-1 uppercase tracking-wider">Admin Panel</p>
           </div>
-          <div className="relative">
+          <div className="flex items-center gap-2">
             <NotificationBell />
+            {/* Mobile close button */}
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="lg:hidden p-2 hover:bg-gray-900 rounded transition"
+            >
+              <X size={20} />
+            </button>
           </div>
         </div>
       </div>
       
       <nav className="space-y-1">
-        <button
-          onClick={() => navigate('/admin/')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/') || isActive('/admin')
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <BarChart2 size={18} />
-          <span>Dashboard</span>
-        </button>
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const active = item.path === '/admin/' 
+            ? (isActive('/admin/') || isActive('/admin'))
+            : isActive(item.path);
+          
+          return (
+            <button
+              key={item.path}
+              onClick={() => handleNavClick(item.path)}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
+                active
+                  ? 'bg-white text-black translate-x-2' 
+                  : 'hover:bg-gray-900 hover:translate-x-1'
+              }`}
+            >
+              <Icon size={18} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
         
         <button
-          onClick={() => navigate('/admin/products')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/products') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Package size={18} />
-          <span>Ürünler</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/orders')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/orders') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <ShoppingBag size={18} />
-          <span>Siparişler</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/inventory')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/inventory') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Archive size={18} />
-          <span>Envanter</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/users')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/users') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Users size={18} />
-          <span>Kullanıcılar</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/reports')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/reports') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <PieChart size={18} />
-          <span>Raporlar</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/coupons')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/coupons') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Tag size={18} />
-          <span>Kuponlar</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/flash-sale')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/flash-sale') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Zap size={18} />
-          <span>Flash Sale</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/blog')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/blog') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <FileText size={18} />
-          <span>Blog</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/reviews')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/reviews') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Star size={18} />
-          <span>Yorumlar</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/contact')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/contact') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <MessageSquare size={18} />
-          <span>Mesajlar</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/faq')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/faq') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <HelpCircle size={18} />
-          <span>SSS</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/seo')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/seo') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Search size={18} />
-          <span>SEO</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/email')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/email') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Mail size={18} />
-          <span>Mail Gönder</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/settings')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/settings') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <Settings size={18} />
-          <span>Ayarlar</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/admin/payment-settings')}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-sm uppercase tracking-wider transition-all duration-300 ${
-            isActive('/admin/payment-settings') 
-              ? 'bg-white text-black translate-x-2' 
-              : 'hover:bg-gray-900 hover:translate-x-1'
-          }`}
-        >
-          <CreditCard size={18} />
-          <span>Ödeme Yöntemleri</span>
-        </button>
-        
-        <button
-          onClick={() => navigate('/')}
+          onClick={() => handleNavClick('/')}
           className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-900 hover:translate-x-1 transition-all duration-300 text-sm uppercase tracking-wider"
         >
           <Eye size={18} />
@@ -239,7 +101,52 @@ const AdminSidebar = () => {
           <span>Çıkış</span>
         </button>
       </nav>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-black text-white p-3 rounded-lg shadow-lg hover:bg-gray-800 transition"
+      >
+        <Menu size={24} />
+      </button>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block w-64 bg-black text-white p-6 min-h-screen fixed left-0 top-0">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className="fixed left-0 top-0 bottom-0 w-64 bg-black text-white p-6 overflow-y-auto transform transition-transform duration-300 ease-out"
+            onClick={(e) => e.stopPropagation()}
+            style={{ animation: 'slideInLeft 0.3s ease-out' }}
+          >
+            <SidebarContent />
+          </div>
+        </div>
+      )}
+
+      {/* Add slide animation */}
+      <style jsx>{`
+        @keyframes slideInLeft {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+      `}</style>
+    </>
   );
 };
 
