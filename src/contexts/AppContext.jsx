@@ -157,6 +157,8 @@ export const AppProvider = ({ children }) => {
 
   // Supabase'den ürünleri yükle
   useEffect(() => {
+    console.log('🚀 AppContext useEffect ÇALIŞTI - Products Realtime başlatılıyor...');
+    
     loadProducts();
 
     // ✅ Realtime ürün güncellemeleri (stok değişiklikleri için)

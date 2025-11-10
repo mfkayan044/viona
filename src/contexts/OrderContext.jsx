@@ -46,6 +46,8 @@ export const OrderProvider = ({ children }) => {
 
   // Supabase'den siparişleri yükle
   useEffect(() => {
+    console.log('🚀 OrderContext useEffect ÇALIŞTI - Realtime başlatılıyor...');
+    
     // Eski localStorage verilerini temizle
     localStorage.removeItem('orders');
     
