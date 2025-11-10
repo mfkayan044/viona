@@ -180,10 +180,8 @@ export const AppProvider = ({ children }) => {
           // Polling'i durdur, realtime çalışıyor
           clearInterval(pollingInterval);
           
-          // Sadece güncellenen ürünü state'te güncelle
-          setProducts(prev => 
-            prev.map(p => p.id === payload.new.id ? payload.new : p)
-          );
+          // Ürünleri yeniden yükle
+          loadProducts();
         }
       )
       .subscribe((status) => {
