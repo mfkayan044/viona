@@ -197,12 +197,12 @@ const AdminProducts = () => {
   };
 
   return (
-    <div className="flex-1 p-8 bg-neutral-50">
-      <h1 className="text-3xl font-light tracking-wider mb-8 uppercase">Ürün Yönetimi</h1>
+    <div className="flex-1 p-4 sm:p-8 bg-neutral-50">
+      <h1 className="text-2xl sm:text-3xl font-light tracking-wider mb-6 sm:mb-8 uppercase">Ürün Yönetimi</h1>
       
-      <div className="bg-white border border-neutral-200 p-6 mb-8">
-        <h2 className="text-xl font-light mb-6 uppercase tracking-wider">Yeni Ürün</h2>
-        <div className="grid grid-cols-2 gap-4">
+      <div className="bg-white border border-neutral-200 p-4 sm:p-6 mb-8">
+        <h2 className="text-lg sm:text-xl font-light mb-4 sm:mb-6 uppercase tracking-wider">Yeni Ürün</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input
             type="text"
             placeholder="Ürün Adı"
@@ -243,31 +243,31 @@ const AdminProducts = () => {
           </select>
           
           {/* Image Upload Section */}
-          <div className="col-span-2">
+          <div className="col-span-1 sm:col-span-2">
             <label className="block text-sm font-light mb-2 uppercase tracking-wider">Ürün Görselleri</label>
             <div className="flex gap-2 mb-2">
               <button
                 type="button"
                 onClick={() => setImageUploadMethod('url')}
-                className={`flex items-center gap-2 px-3 py-1 text-xs transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 sm:px-3 sm:py-1 text-sm sm:text-xs transition-all touch-manipulation ${
                   imageUploadMethod === 'url'
                     ? 'bg-black text-white'
                     : 'bg-neutral-100 hover:bg-neutral-200'
                 }`}
               >
-                <LinkIcon size={14} />
+                <LinkIcon size={16} className="sm:w-3.5 sm:h-3.5" />
                 URL
               </button>
               <button
                 type="button"
                 onClick={() => setImageUploadMethod('file')}
-                className={`flex items-center gap-2 px-3 py-1 text-xs transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 sm:px-3 sm:py-1 text-sm sm:text-xs transition-all touch-manipulation ${
                   imageUploadMethod === 'file'
                     ? 'bg-black text-white'
                     : 'bg-neutral-100 hover:bg-neutral-200'
                 }`}
               >
-                <Upload size={14} />
+                <Upload size={16} className="sm:w-3.5 sm:h-3.5" />
                 Dosya
               </button>
             </div>
@@ -363,34 +363,34 @@ const AdminProducts = () => {
             placeholder="Stok Adedi"
             value={newProduct.stock}
             onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-            className="input-field"
+            className="input-field sm:col-span-1 col-span-1"
           />
           <textarea
             placeholder="Açıklama"
             value={newProduct.description}
             onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-            className="input-field col-span-2"
+            className="input-field col-span-1 sm:col-span-2"
             rows="3"
           />
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 col-span-1 sm:col-span-2 touch-manipulation py-2">
             <input
               type="checkbox"
               checked={newProduct.featured}
               onChange={(e) => setNewProduct({...newProduct, featured: e.target.checked})}
-              className="w-4 h-4"
+              className="w-5 h-5 sm:w-4 sm:h-4"
             />
-            <span className="text-sm">Öne Çıkan Ürün</span>
+            <span className="text-base sm:text-sm">Öne Çıkan Ürün</span>
           </label>
         </div>
 
         {/* Varyant Yönetimi */}
         <div className="mt-6 border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-light uppercase tracking-wider">Ürün Varyantları</h3>
+            <h3 className="text-base sm:text-lg font-light uppercase tracking-wider">Ürün Varyantları</h3>
             <button
               type="button"
               onClick={() => setShowVariantForm(!showVariantForm)}
-              className="btn-secondary text-sm"
+              className="btn-secondary text-xs sm:text-sm touch-manipulation"
             >
               {showVariantForm ? 'Formu Gizle' : '+ Varyant Ekle'}
             </button>
@@ -481,24 +481,24 @@ const AdminProducts = () => {
 
         <button
           onClick={handleAddProduct}
-          className="mt-4 btn-primary flex items-center gap-2 shadow-lg hover:shadow-xl"
+          className="mt-4 w-full sm:w-auto btn-primary flex items-center justify-center gap-2 shadow-lg hover:shadow-xl text-base sm:text-sm py-4 sm:py-2 touch-manipulation"
         >
-          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+          <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300" />
           Ürün Ekle
         </button>
       </div>
 
-      <div className="bg-white border border-neutral-200 p-6">
-        <h2 className="text-xl font-light mb-6 uppercase tracking-wider">
+      <div className="bg-white border border-neutral-200 p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-light mb-4 sm:mb-6 uppercase tracking-wider">
           Mevcut Ürünler ({products.length})
         </h2>
         <div className="space-y-4">
           {products.map(product => (
-            <div key={product.id} className="border border-neutral-200 p-4 flex items-start gap-4">
+            <div key={product.id} className="border border-neutral-200 p-3 sm:p-4 flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
               {/* Galeri Görselleri */}
               {product.images && product.images.length > 0 ? (
-                <div className="flex gap-2">
-                  <img src={product.images[0]} alt={product.name} className="w-24 h-24 object-cover" />
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <img src={product.images[0]} alt={product.name} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded" />
                   {product.images.length > 1 && (
                     <div className="text-xs text-neutral-500 self-center">
                       +{product.images.length - 1} görsel
@@ -506,30 +506,30 @@ const AdminProducts = () => {
                   )}
                 </div>
               ) : product.image && (
-                <img src={product.image} alt={product.name} className="w-24 h-24 object-cover" />
+                <img src={product.image} alt={product.name} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded" />
               )}
               
               {editingProduct === product.id ? (
-                <div className="flex-1">
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="flex-1 w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-2">
                     <input
                       type="text"
                       defaultValue={product.name}
                       onBlur={(e) => updateProduct(product.id, {name: e.target.value})}
-                      className="border border-neutral-300 px-2 py-1"
+                      className="input-field"
                       placeholder="Ürün Adı"
                     />
                     <input
                       type="number"
                       defaultValue={product.price}
                       onBlur={(e) => updateProduct(product.id, {price: parseFloat(e.target.value)})}
-                      className="border border-neutral-300 px-2 py-1"
+                      className="input-field"
                       placeholder="Fiyat"
                     />
                     <select
                       defaultValue={product.category || ''}
                       onChange={(e) => updateProduct(product.id, {category: e.target.value})}
-                      className="border border-neutral-300 px-2 py-1"
+                      className="input-field"
                     >
                       <option value="">Kategori Seçin</option>
                       {categories.map(cat => (
@@ -539,7 +539,7 @@ const AdminProducts = () => {
                     <select
                       defaultValue={product.color || ''}
                       onChange={(e) => updateProduct(product.id, {color: e.target.value})}
-                      className="border border-neutral-300 px-2 py-1"
+                      className="input-field"
                     >
                       <option value="">Renk Seçin</option>
                       {colors.map(color => (
@@ -550,22 +550,22 @@ const AdminProducts = () => {
                       type="number"
                       defaultValue={product.stock}
                       onBlur={(e) => updateProduct(product.id, {stock: parseInt(e.target.value)})}
-                      className="border border-neutral-300 px-2 py-1"
+                      className="input-field"
                       placeholder="Stok"
                     />
-                    <label className="flex items-center gap-2 col-span-1">
+                    <label className="flex items-center gap-2 col-span-1 touch-manipulation py-2">
                       <input
                         type="checkbox"
                         defaultChecked={product.featured}
                         onChange={(e) => updateProduct(product.id, {featured: e.target.checked})}
-                        className="w-4 h-4"
+                        className="w-5 h-5 sm:w-4 sm:h-4"
                       />
-                      <span className="text-sm">Öne Çıkan</span>
+                      <span className="text-base sm:text-sm">Öne Çıkan</span>
                     </label>
                     <textarea
                       defaultValue={product.description}
                       onBlur={(e) => updateProduct(product.id, {description: e.target.value})}
-                      className="border border-neutral-300 px-2 py-1 col-span-2"
+                      className="input-field col-span-1 sm:col-span-2"
                       placeholder="Açıklama"
                       rows="2"
                     />
@@ -574,11 +574,11 @@ const AdminProducts = () => {
                   {/* Varyant Yönetimi - Düzenleme Modunda */}
                   <div className="mt-4 border-t pt-4">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium uppercase tracking-wider">Ürün Varyantları</h4>
+                      <h4 className="text-xs sm:text-sm font-medium uppercase tracking-wider">Ürün Varyantları</h4>
                       <button
                         type="button"
                         onClick={() => setEditVariantForm(!editVariantForm)}
-                        className="text-xs bg-neutral-800 text-white px-3 py-1 hover:bg-black"
+                        className="text-xs bg-neutral-800 text-white px-3 py-2 sm:py-1 hover:bg-black touch-manipulation"
                       >
                         {editVariantForm ? 'Formu Gizle' : '+ Varyant Ekle'}
                       </button>
@@ -586,13 +586,13 @@ const AdminProducts = () => {
 
                     {editVariantForm && (
                       <div className="bg-neutral-50 p-3 rounded mb-3">
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-2">
                           <input
                             type="text"
                             placeholder="Renk"
                             value={editNewVariant.color}
                             onChange={(e) => setEditNewVariant({...editNewVariant, color: e.target.value})}
-                            className="border border-neutral-300 px-2 py-1 text-sm"
+                            className="input-field"
                           />
                           <input
                             type="text"
@@ -663,21 +663,21 @@ const AdminProducts = () => {
                       setEditVariantForm(false);
                       setEditNewVariant({ color: '', sizes: '', stock: '', priceModifier: 0 });
                     }}
-                    className="mt-4 bg-black text-white px-4 py-2 hover:bg-neutral-800 w-full"
+                    className="mt-4 bg-black text-white px-4 py-3 sm:py-2 hover:bg-neutral-800 w-full touch-manipulation text-base sm:text-sm"
                   >
                     Düzenlemeyi Bitir
                   </button>
                 </div>
               ) : (
                 <>
-                  <div className="flex-1">
-                    <h3 className="font-light text-lg uppercase tracking-wider">{product.name}</h3>
-                    <p className="text-neutral-600 text-sm mt-1">{product.description}</p>
-                    <div className="flex items-center gap-4 mt-2 flex-wrap">
-                      <span className="font-light">{product.price.toLocaleString('tr-TR')} ₺</span>
-                      <span className="text-sm text-neutral-500">Stok: {product.stock}</span>
-                      {product.category && <span className="text-sm text-neutral-500">Kategori: {product.category}</span>}
-                      {product.color && <span className="text-sm text-neutral-500">Renk: {product.color}</span>}
+                  <div className="flex-1 w-full">
+                    <h3 className="font-light text-base sm:text-lg uppercase tracking-wider">{product.name}</h3>
+                    <p className="text-neutral-600 text-sm mt-1 line-clamp-2 sm:line-clamp-none">{product.description}</p>
+                    <div className="flex items-center gap-3 sm:gap-4 mt-2 flex-wrap text-sm sm:text-base">
+                      <span className="font-light text-base">{product.price.toLocaleString('tr-TR')} ₺</span>
+                      <span className="text-xs sm:text-sm text-neutral-500">Stok: {product.stock}</span>
+                      {product.category && <span className="text-xs sm:text-sm text-neutral-500">Kategori: {product.category}</span>}
+                      {product.color && <span className="text-xs sm:text-sm text-neutral-500">Renk: {product.color}</span>}
                       {product.featured && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">Öne Çıkan</span>}
                       {product.variants && product.variants.length > 0 && (
                         <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
@@ -691,7 +691,7 @@ const AdminProducts = () => {
                       <div className="mt-3 space-y-1">
                         <p className="text-xs font-medium text-neutral-700 mb-1">Varyantlar:</p>
                         {product.variants.map((variant, index) => (
-                          <div key={index} className="text-xs bg-neutral-50 px-2 py-1 rounded flex items-center gap-3">
+                          <div key={index} className="text-xs bg-neutral-50 px-2 py-1 rounded flex items-center gap-2 sm:gap-3 flex-wrap">
                             <span className="font-medium">{variant.color}</span>
                             {variant.sizes && variant.sizes.length > 0 && (
                               <span className="text-neutral-500">Beden: {variant.sizes.join(', ')}</span>
@@ -707,18 +707,18 @@ const AdminProducts = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => setEditingProduct(product.id)}
-                      className="p-2 border border-neutral-300 hover:border-black hover:scale-110 transition-all duration-300"
+                      className="flex-1 sm:flex-none p-3 sm:p-2 border border-neutral-300 hover:border-black hover:scale-110 transition-all duration-300 touch-manipulation"
                     >
-                      <Edit2 size={18} />
+                      <Edit2 size={20} className="sm:w-[18px] sm:h-[18px] mx-auto" />
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product.id)}
-                      className="p-2 border border-neutral-300 hover:border-red-600 hover:text-red-600 hover:scale-110 transition-all duration-300"
+                      className="flex-1 sm:flex-none p-3 sm:p-2 border border-neutral-300 hover:border-red-600 hover:text-red-600 hover:scale-110 transition-all duration-300 touch-manipulation"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={20} className="sm:w-[18px] sm:h-[18px] mx-auto" />
                     </button>
                   </div>
                 </>
