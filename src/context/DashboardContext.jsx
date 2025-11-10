@@ -34,40 +34,8 @@ export const DashboardProvider = ({ children }) => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Realtime subscriptions
-  useEffect(() => {
-    // Orders tablosundaki değişiklikleri dinle
-    const ordersSubscription = supabase
-      .channel('orders-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' },
-        (payload) => {
-          console.log('🔔 Order değişikliği:', payload);
-          loadOrders(); // Siparişleri yeniden yükle
-          loadDashboardStats(); // İstatistikleri güncelle
-        }
-      )
-      .subscribe();
-
-    // Products tablosundaki değişiklikleri dinle
-    const productsSubscription = supabase
-      .channel('products-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'products' },
-        (payload) => {
-          console.log('🔔 Product değişikliği:', payload);
-          // AppContext'in loadProducts'ı tetikle (global refresh için)
-        }
-      )
-      .subscribe();
-
-    return () => {
-      ordersSubscription.unsubscribe();
-      productsSubscription.unsubscribe();
-    };
-  }, []);
+  // ⚠️ Realtime artık OrderContext ve AppContext'te yönetiliyor
+  // Duplicate subscription kaldırıldı
 
   useEffect(() => {
     loadDashboardStats();
