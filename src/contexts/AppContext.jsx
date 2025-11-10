@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { productService, heroImageService, siteSettingsService, categoryService, colorService } from '../services/supabase.service';
 import { supabase } from '../lib/supabase';
 
@@ -135,7 +135,7 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
       const data = await productService.getAll();
@@ -153,7 +153,7 @@ export const AppProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Dependency yok - her zaman aynı fonksiyon
 
   // Supabase'den ürünleri yükle
   useEffect(() => {
@@ -195,7 +195,7 @@ export const AppProvider = ({ children }) => {
       clearInterval(pollingInterval);
       supabase.removeChannel(channel);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadProducts]); // loadProducts'ı dependency olarak ekle
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id);

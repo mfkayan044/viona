@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { orderService, productService, notificationService, userService } from '../services/supabase.service';
 import { supabase } from '../lib/supabase';
 import { emailService } from '../services/email.service';
@@ -17,7 +17,7 @@ export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       const data = await orderService.getAll();
@@ -42,7 +42,7 @@ export const OrderProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Dependency yok - her zaman aynı fonksiyon
 
   // Supabase'den siparişleri yükle
   useEffect(() => {
@@ -83,7 +83,7 @@ export const OrderProvider = ({ children }) => {
       clearInterval(pollingInterval);
       supabase.removeChannel(channel);
     };
-  }, []); // loadOrders stable olduğu için dependency'e eklemeye gerek yok
+  }, [loadOrders]); // loadOrders'ı dependency olarak ekle
 
   // Yeni sipariş oluştur
   const createOrder = async (orderData) => {
