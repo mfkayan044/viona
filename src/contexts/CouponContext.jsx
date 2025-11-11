@@ -54,8 +54,7 @@ export const CouponProvider = ({ children }) => {
         valid_until: '2025-12-31',
         usage_limit: 100,
         used_count: 0,
-        is_active: true,
-        description: 'İlk alışverişinizde %50 indirim'
+        is_active: true
       },
       {
         code: 'KARGO0',
@@ -66,8 +65,7 @@ export const CouponProvider = ({ children }) => {
         valid_until: '2025-12-31',
         usage_limit: 200,
         used_count: 0,
-        is_active: true,
-        description: 'Kargo bedava - 30 TL indirim'
+        is_active: true
       }
     ];
 
