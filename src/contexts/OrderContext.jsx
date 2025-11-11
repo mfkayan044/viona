@@ -263,14 +263,25 @@ export const OrderProvider = ({ children }) => {
   // Siparişi sil
   const deleteOrder = async (orderId) => {
     try {
+      // 1. Önce kupon kullanım kaydını sil (foreign key hatası önleme)
+      const { error: couponError } = await supabase
+        .from('coupon_usage')
+        .delete()
+        .eq('order_id', orderId);
+      
+      if (couponError) {
+        console.warn('⚠️ Kupon kullanım kaydı silinirken hata (devam ediliyor):', couponError);
+      }
+
+      // 2. Sonra siparişi sil
       await orderService.delete(orderId);
       console.log('✅ Sipariş silindi:', orderId);
       
-      // Lokal state'den kaldır
+      // 3. Lokal state'den kaldır
       setOrders(prev => prev.filter(order => order.id !== orderId));
     } catch (error) {
       console.error('❌ Sipariş silinirken hata:', error);
-      alert('Sipariş silinirken bir hata oluştu!');
+      alert('Sipariş silinirken bir hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
       throw error;
     }
   };
