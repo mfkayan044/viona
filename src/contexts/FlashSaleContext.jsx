@@ -11,15 +11,27 @@ export const useFlashSale = () => {
 };
 
 export const FlashSaleProvider = ({ children }) => {
+  // Sabit bir kampanya bitiş tarihi (her zaman aynı tarih)
+  const CAMPAIGN_END_DATE = '2025-12-31T23:59:59.999Z'; // 31 Aralık 2025
+  
   const [flashSales, setFlashSales] = useState(() => {
     const saved = localStorage.getItem('flashSales');
-    return saved ? JSON.parse(saved) : [
+    if (saved) {
+      const parsedSales = JSON.parse(saved);
+      // Eğer kayıtlı kampanya varsa ve geçerli bir bitiş tarihi varsa kullan
+      if (parsedSales.length > 0 && parsedSales[0].endDate) {
+        return parsedSales;
+      }
+    }
+    
+    // Default kampanya - Sabit tarih ile
+    return [
       {
         id: 1,
         name: 'Kış İndirimi',
         discount: 30,
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 gün sonra
+        startDate: '2025-01-01T00:00:00.000Z',
+        endDate: CAMPAIGN_END_DATE,
         productIds: [1, 2],
         isActive: true
       }

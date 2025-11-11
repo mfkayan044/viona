@@ -2,10 +2,13 @@
 -- SEO SETTINGS TABLE
 -- ====================================
 
+-- Önce eski tablo varsa sil
+DROP TABLE IF EXISTS public.seo_settings CASCADE;
+
 -- SEO ayarları tablosu
-CREATE TABLE IF NOT EXISTS public.seo_settings (
+CREATE TABLE public.seo_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  page_key TEXT UNIQUE NOT NULL, -- 'home', 'products', 'contact', etc.
+  page_key TEXT UNIQUE NOT NULL,
   page_title TEXT NOT NULL,
   meta_title TEXT NOT NULL,
   meta_description TEXT NOT NULL,
@@ -29,6 +32,10 @@ CREATE TABLE IF NOT EXISTS public.seo_settings (
 
 -- RLS Policies
 ALTER TABLE public.seo_settings ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Admins can manage SEO settings" ON public.seo_settings;
+DROP POLICY IF EXISTS "Everyone can read SEO settings" ON public.seo_settings;
 
 -- Admin can do everything
 CREATE POLICY "Admins can manage SEO settings"
@@ -55,10 +62,12 @@ INSERT INTO public.seo_settings (page_key, page_title, meta_title, meta_descript
 ('home', 'Ana Sayfa', 'Viona - Premium Moda & Giyim', 'Viona ile tarzınızı yansıtın. En yeni moda trendleri, kaliteli ürünler ve hızlı teslimat.', 'moda, giyim, elbise, ayakkabı, aksesuar, online alışveriş'),
 ('products', 'Ürünler', 'Tüm Ürünler - Viona', 'Geniş ürün yelpazemizi keşfedin. Kadın, erkek ve çocuk giyim koleksiyonları.', 'ürünler, moda, giyim, koleksiyon'),
 ('contact', 'İletişim', 'İletişim - Viona', 'Viona ile iletişime geçin. Müşteri hizmetlerimiz size yardımcı olmak için burada.', 'iletişim, müşteri hizmetleri, destek'),
-('blog', 'Blog', 'Blog - Viona', 'Moda trendleri, stil önerileri ve daha fazlası için blogumuzu takip edin.', 'blog, moda blog, stil, trend')
-ON CONFLICT (page_key) DO NOTHING;
+('blog', 'Blog', 'Blog - Viona', 'Moda trendleri, stil önerileri ve daha fazlası için blogumuzu takip edin.', 'blog, moda blog, stil, trend');
 
 -- Updated at trigger
+DROP TRIGGER IF EXISTS update_seo_settings_updated_at ON public.seo_settings;
+DROP FUNCTION IF EXISTS update_seo_settings_updated_at();
+
 CREATE OR REPLACE FUNCTION update_seo_settings_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
