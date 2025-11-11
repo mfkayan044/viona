@@ -191,8 +191,8 @@ const AdminCoupons = () => {
                 </tr>
               ) : (
                 coupons.map((coupon) => {
-                  const isExpired = new Date(coupon.validUntil) < new Date();
-                  const isLimitReached = coupon.usedCount >= coupon.usageLimit;
+                  const isExpired = new Date(coupon.expires_at) < new Date();
+                  const isLimitReached = coupon.current_uses >= coupon.max_uses;
                   
                   return (
                     <tr key={coupon.id} className="border-b border-neutral-100">
@@ -201,9 +201,6 @@ const AdminCoupons = () => {
                           <Tag size={16} className="text-neutral-400" />
                           <span className="font-medium">{coupon.code}</span>
                         </div>
-                        {coupon.description && (
-                          <p className="text-xs text-neutral-500 mt-1">{coupon.description}</p>
-                        )}
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1">
@@ -216,17 +213,14 @@ const AdminCoupons = () => {
                             <span>{coupon.discount} ₺</span>
                           )}
                         </div>
-                        {coupon.type === 'percentage' && coupon.maxDiscount > 0 && (
-                          <p className="text-xs text-neutral-500">Max: {coupon.maxDiscount} ₺</p>
-                        )}
                       </td>
                       <td className="p-4 text-sm">
-                        {coupon.minAmount > 0 ? `${coupon.minAmount} ₺` : '-'}
+                        {coupon.min_purchase > 0 ? `${coupon.min_purchase} ₺` : '-'}
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1 text-sm">
                           <TrendingUp size={14} className="text-neutral-400" />
-                          <span>{coupon.usedCount} / {coupon.usageLimit}</span>
+                          <span>{coupon.current_uses} / {coupon.max_uses}</span>
                         </div>
                         {isLimitReached && (
                           <span className="text-xs text-red-600">Limit doldu</span>
@@ -235,7 +229,7 @@ const AdminCoupons = () => {
                       <td className="p-4">
                         <div className="flex items-center gap-1 text-sm">
                           <Calendar size={14} className="text-neutral-400" />
-                          <span>{new Date(coupon.validUntil).toLocaleDateString('tr-TR')}</span>
+                          <span>{new Date(coupon.expires_at).toLocaleDateString('tr-TR')}</span>
                         </div>
                         {isExpired && (
                           <span className="text-xs text-red-600">Süresi dolmuş</span>
@@ -245,10 +239,10 @@ const AdminCoupons = () => {
                         <button
                           onClick={() => toggleCouponStatus(coupon.id)}
                           className={`flex items-center gap-1 text-sm ${
-                            coupon.isActive ? 'text-green-600' : 'text-neutral-400'
+                            coupon.is_active ? 'text-green-600' : 'text-neutral-400'
                           }`}
                         >
-                          {coupon.isActive ? (
+                          {coupon.is_active ? (
                             <>
                               <ToggleRight size={20} />
                               <span>Aktif</span>

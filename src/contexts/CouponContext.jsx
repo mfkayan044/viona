@@ -49,22 +49,20 @@ export const CouponProvider = ({ children }) => {
         code: 'HOSGELDIN50',
         discount: 50,
         type: 'percentage',
-        min_amount: 200,
-        max_discount: 100,
-        valid_until: '2025-12-31',
-        usage_limit: 100,
-        used_count: 0,
+        min_purchase: 200,
+        expires_at: '2025-12-31T23:59:59Z',
+        max_uses: 100,
+        current_uses: 0,
         is_active: true
       },
       {
         code: 'KARGO0',
         discount: 30,
         type: 'fixed',
-        min_amount: 150,
-        max_discount: 30,
-        valid_until: '2025-12-31',
-        usage_limit: 200,
-        used_count: 0,
+        min_purchase: 150,
+        expires_at: '2025-12-31T23:59:59Z',
+        max_uses: 200,
+        current_uses: 0,
         is_active: true
       }
     ];
@@ -93,18 +91,18 @@ export const CouponProvider = ({ children }) => {
       return { valid: false, message: 'Bu kupon artık aktif değil' };
     }
 
-    if (new Date(coupon.valid_until) < new Date()) {
+    if (new Date(coupon.expires_at) < new Date()) {
       return { valid: false, message: 'Bu kuponun süresi dolmuş' };
     }
 
-    if (coupon.used_count >= coupon.usage_limit) {
+    if (coupon.current_uses >= coupon.max_uses) {
       return { valid: false, message: 'Bu kuponun kullanım limiti dolmuş' };
     }
 
-    if (cartTotal < coupon.min_amount) {
+    if (cartTotal < coupon.min_purchase) {
       return { 
         valid: false, 
-        message: `Bu kupon minimum ${coupon.min_amount} TL alışveriş için geçerlidir` 
+        message: `Bu kupon minimum ${coupon.min_purchase} TL alışveriş için geçerlidir` 
       };
     }
 
@@ -161,9 +159,6 @@ export const CouponProvider = ({ children }) => {
     
     if (appliedCoupon.type === 'percentage') {
       discount = (cartTotal * appliedCoupon.discount) / 100;
-      if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
-        discount = appliedCoupon.max_discount;
-      }
     } else {
       discount = appliedCoupon.discount;
     }
@@ -175,7 +170,7 @@ export const CouponProvider = ({ children }) => {
     try {
       const { error } = await supabase
         .from('coupons')
-        .update({ used_count: supabase.raw('used_count + 1') })
+        .update({ current_uses: supabase.raw('current_uses + 1') })
         .eq('id', couponId);
 
       if (error) throw error;
@@ -183,7 +178,7 @@ export const CouponProvider = ({ children }) => {
       // Local state güncelle
       setCoupons(prev => prev.map(c => 
         c.id === couponId 
-          ? { ...c, used_count: c.used_count + 1 }
+          ? { ...c, current_uses: c.current_uses + 1 }
           : c
       ));
     } catch (error) {
@@ -198,13 +193,11 @@ export const CouponProvider = ({ children }) => {
         code: couponData.code,
         discount: couponData.discount,
         type: couponData.type,
-        min_amount: couponData.minAmount || 0,
-        max_discount: couponData.maxDiscount,
-        valid_until: couponData.validUntil,
-        usage_limit: couponData.usageLimit || 100,
-        used_count: 0,
-        is_active: true,
-        description: couponData.description
+        min_purchase: couponData.minAmount || 0,
+        expires_at: couponData.validUntil,
+        max_uses: couponData.usageLimit || 100,
+        current_uses: 0,
+        is_active: true
       };
 
       const { data, error } = await supabase
@@ -229,12 +222,10 @@ export const CouponProvider = ({ children }) => {
         code: updates.code,
         discount: updates.discount,
         type: updates.type,
-        min_amount: updates.minAmount,
-        max_discount: updates.maxDiscount,
-        valid_until: updates.validUntil,
-        usage_limit: updates.usageLimit,
-        is_active: updates.isActive !== undefined ? updates.isActive : undefined,
-        description: updates.description
+        min_purchase: updates.minAmount,
+        expires_at: updates.validUntil,
+        max_uses: updates.usageLimit,
+        is_active: updates.isActive !== undefined ? updates.isActive : undefined
       };
 
       // Remove undefined values
