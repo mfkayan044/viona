@@ -12,56 +12,77 @@ export const useCoupon = () => {
 };
 
 export const CouponProvider = ({ children }) => {
-  const [coupons, setCoupons] = useState(() => {
-    const saved = localStorage.getItem('coupons');
-    return saved ? JSON.parse(saved) : [
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  // Supabase'den kuponları çek
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
+
+  const fetchCoupons = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        setCoupons(data);
+      } else {
+        // Eğer veritabanında kupon yoksa, default kuponları ekle
+        await initializeDefaultCoupons();
+      }
+    } catch (error) {
+      console.error('❌ Kuponlar yüklenirken hata:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const initializeDefaultCoupons = async () => {
+    const defaultCoupons = [
       {
-        id: 1,
         code: 'HOSGELDIN50',
         discount: 50,
-        type: 'percentage', // 'percentage' veya 'fixed'
-        minAmount: 200,
-        maxDiscount: 100,
-        validUntil: '2025-12-31',
-        usageLimit: 100,
-        usedCount: 0,
-        isActive: true,
+        type: 'percentage',
+        min_amount: 200,
+        max_discount: 100,
+        valid_until: '2025-12-31',
+        usage_limit: 100,
+        used_count: 0,
+        is_active: true,
         description: 'İlk alışverişinizde %50 indirim'
       },
       {
-        id: 2,
         code: 'KARGO0',
         discount: 30,
         type: 'fixed',
-        minAmount: 150,
-        maxDiscount: 30,
-        validUntil: '2025-12-31',
-        usageLimit: 200,
-        usedCount: 0,
-        isActive: true,
+        min_amount: 150,
+        max_discount: 30,
+        valid_until: '2025-12-31',
+        usage_limit: 200,
+        used_count: 0,
+        is_active: true,
         description: 'Kargo bedava - 30 TL indirim'
-      },
-      {
-        id: 3,
-        code: 'YAZ2025',
-        discount: 30,
-        type: 'percentage',
-        minAmount: 300,
-        maxDiscount: 150,
-        validUntil: '2025-08-31',
-        usageLimit: 50,
-        usedCount: 0,
-        isActive: true,
-        description: 'Yaz kampanyası %30 indirim'
       }
     ];
-  });
 
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .insert(defaultCoupons)
+        .select();
 
-  useEffect(() => {
-    localStorage.setItem('coupons', JSON.stringify(coupons));
-  }, [coupons]);
+      if (error) throw error;
+      if (data) setCoupons(data);
+    } catch (error) {
+      console.error('❌ Default kuponlar eklenirken hata:', error);
+    }
+  };
 
   const validateCoupon = async (code, cartTotal, userEmail) => {
     const coupon = coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
@@ -70,22 +91,22 @@ export const CouponProvider = ({ children }) => {
       return { valid: false, message: 'Geçersiz kupon kodu' };
     }
 
-    if (!coupon.isActive) {
+    if (!coupon.is_active) {
       return { valid: false, message: 'Bu kupon artık aktif değil' };
     }
 
-    if (new Date(coupon.validUntil) < new Date()) {
+    if (new Date(coupon.valid_until) < new Date()) {
       return { valid: false, message: 'Bu kuponun süresi dolmuş' };
     }
 
-    if (coupon.usedCount >= coupon.usageLimit) {
+    if (coupon.used_count >= coupon.usage_limit) {
       return { valid: false, message: 'Bu kuponun kullanım limiti dolmuş' };
     }
 
-    if (cartTotal < coupon.minAmount) {
+    if (cartTotal < coupon.min_amount) {
       return { 
         valid: false, 
-        message: `Bu kupon minimum ${coupon.minAmount} TL alışveriş için geçerlidir` 
+        message: `Bu kupon minimum ${coupon.min_amount} TL alışveriş için geçerlidir` 
       };
     }
 
@@ -142,8 +163,8 @@ export const CouponProvider = ({ children }) => {
     
     if (appliedCoupon.type === 'percentage') {
       discount = (cartTotal * appliedCoupon.discount) / 100;
-      if (appliedCoupon.maxDiscount && discount > appliedCoupon.maxDiscount) {
-        discount = appliedCoupon.maxDiscount;
+      if (appliedCoupon.max_discount && discount > appliedCoupon.max_discount) {
+        discount = appliedCoupon.max_discount;
       }
     } else {
       discount = appliedCoupon.discount;
@@ -152,44 +173,139 @@ export const CouponProvider = ({ children }) => {
     return Math.min(discount, cartTotal);
   };
 
-  const useCouponCode = (couponId) => {
-    setCoupons(prev => prev.map(c => 
-      c.id === couponId 
-        ? { ...c, usedCount: c.usedCount + 1 }
-        : c
-    ));
+  const useCouponCode = async (couponId) => {
+    try {
+      const { error } = await supabase
+        .from('coupons')
+        .update({ used_count: supabase.raw('used_count + 1') })
+        .eq('id', couponId);
+
+      if (error) throw error;
+      
+      // Local state güncelle
+      setCoupons(prev => prev.map(c => 
+        c.id === couponId 
+          ? { ...c, used_count: c.used_count + 1 }
+          : c
+      ));
+    } catch (error) {
+      console.error('❌ Kupon kullanım sayısı güncellenirken hata:', error);
+    }
   };
 
   // Admin Functions
-  const addCoupon = (couponData) => {
-    const newCoupon = {
-      ...couponData,
-      id: Date.now(),
-      usedCount: 0,
-      isActive: true
-    };
-    setCoupons(prev => [...prev, newCoupon]);
+  const addCoupon = async (couponData) => {
+    try {
+      const newCoupon = {
+        code: couponData.code,
+        discount: couponData.discount,
+        type: couponData.type,
+        min_amount: couponData.minAmount || 0,
+        max_discount: couponData.maxDiscount,
+        valid_until: couponData.validUntil,
+        usage_limit: couponData.usageLimit || 100,
+        used_count: 0,
+        is_active: true,
+        description: couponData.description
+      };
+
+      const { data, error } = await supabase
+        .from('coupons')
+        .insert([newCoupon])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setCoupons(prev => [...prev, data]);
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Kupon eklenirken hata:', error);
+      return { success: false, error: error.message };
+    }
   };
 
-  const updateCoupon = (couponId, updates) => {
-    setCoupons(prev => prev.map(c => 
-      c.id === couponId ? { ...c, ...updates } : c
-    ));
+  const updateCoupon = async (couponId, updates) => {
+    try {
+      const updateData = {
+        code: updates.code,
+        discount: updates.discount,
+        type: updates.type,
+        min_amount: updates.minAmount,
+        max_discount: updates.maxDiscount,
+        valid_until: updates.validUntil,
+        usage_limit: updates.usageLimit,
+        is_active: updates.isActive !== undefined ? updates.isActive : undefined,
+        description: updates.description
+      };
+
+      // Remove undefined values
+      Object.keys(updateData).forEach(key => 
+        updateData[key] === undefined && delete updateData[key]
+      );
+
+      const { error } = await supabase
+        .from('coupons')
+        .update(updateData)
+        .eq('id', couponId);
+
+      if (error) throw error;
+      
+      setCoupons(prev => prev.map(c => 
+        c.id === couponId ? { ...c, ...updateData } : c
+      ));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Kupon güncellenirken hata:', error);
+      return { success: false, error: error.message };
+    }
   };
 
-  const deleteCoupon = (couponId) => {
-    setCoupons(prev => prev.filter(c => c.id !== couponId));
+  const deleteCoupon = async (couponId) => {
+    try {
+      const { error } = await supabase
+        .from('coupons')
+        .delete()
+        .eq('id', couponId);
+
+      if (error) throw error;
+      
+      setCoupons(prev => prev.filter(c => c.id !== couponId));
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Kupon silinirken hata:', error);
+      return { success: false, error: error.message };
+    }
   };
 
-  const toggleCouponStatus = (couponId) => {
-    setCoupons(prev => prev.map(c => 
-      c.id === couponId ? { ...c, isActive: !c.isActive } : c
-    ));
+  const toggleCouponStatus = async (couponId) => {
+    try {
+      const coupon = coupons.find(c => c.id === couponId);
+      if (!coupon) return;
+
+      const { error } = await supabase
+        .from('coupons')
+        .update({ is_active: !coupon.is_active })
+        .eq('id', couponId);
+
+      if (error) throw error;
+      
+      setCoupons(prev => prev.map(c => 
+        c.id === couponId ? { ...c, is_active: !c.is_active } : c
+      ));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Kupon durumu değiştirilirken hata:', error);
+      return { success: false, error: error.message };
+    }
   };
 
   return (
     <CouponContext.Provider value={{
       coupons,
+      loading,
       appliedCoupon,
       applyCoupon,
       removeCoupon,
